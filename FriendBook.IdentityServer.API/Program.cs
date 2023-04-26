@@ -1,4 +1,8 @@
 
+using FriendBook.IdentityServer.API;
+using FriendBook.IdentityServer.API.DAL;
+using Microsoft.EntityFrameworkCore;
+
 namespace FriendBook.IdentityServer.API
 {
     public class Program
@@ -7,10 +11,15 @@ namespace FriendBook.IdentityServer.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddSingleton(builder.Configuration);
+            builder.AddRepositores();
+            builder.AddServices();
+            builder.AddJWT();
+
+            builder.Services.AddDbContext<AppDBContext>(opt => opt.UseNpgsql(
+                builder.Configuration.GetConnectionString(AppDBContext.NameConnection)));
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
