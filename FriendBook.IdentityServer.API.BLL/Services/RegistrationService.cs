@@ -97,7 +97,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier,account.Login),
-                new Claim(CustomClaimType.Post, account.Profession),
+                //new Claim(CustomClaimType.Post, account.Profession),
                 new Claim(CustomClaimType.AccountId, account.Id.ToString())
             };
 
@@ -113,6 +113,17 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+        /// <summary>
+        /// Созвон с Ильей
+        /// </summary>
+        /// <param name="tokenstring"></param>
+        /// <returns></returns>
+        public IEnumerable<Claim> ReadToken(string tokenstring)
+        {
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+            var claims = token.Claims;
+            return claims;
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

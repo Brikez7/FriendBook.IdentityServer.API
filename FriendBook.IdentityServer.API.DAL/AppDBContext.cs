@@ -16,6 +16,7 @@ namespace FriendBook.IdentityServer.API.DAL
         }
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

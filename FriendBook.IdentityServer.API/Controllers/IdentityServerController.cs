@@ -1,8 +1,11 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
@@ -31,6 +34,7 @@ namespace FriendBook.IdentityServer.API.Controllers
                 return Results.NotFound();
             }
             var resourse = await _registrationService.Authenticate(accountDTO);
+            Response.Cookies.SetJwtCookie((resourse.Data.Item1, "1", resourse.Data.Item2));
             if (resourse.Data.Item1 == null)
             {
                 return Results.NoContent();
@@ -49,6 +53,7 @@ namespace FriendBook.IdentityServer.API.Controllers
                 return Results.NotFound();
             }
             var resourse = await _registrationService.Registration(accountDTO);
+            Response.Cookies.SetJwtCookie((resourse.Data.Item1,"1", resourse.Data.Item2));
             if (resourse.Data.Item1 == null)
             {
                 return Results.NoContent();
@@ -57,15 +62,6 @@ namespace FriendBook.IdentityServer.API.Controllers
             {
                 return Results.Json(new { token = resourse.Data.Item1, id = resourse.Data.Item2 });
             }
-        }
-        [HttpGet("CreateDatabase")]
-        public async Task<IResult> CreateDatabase() 
-        {
-            using (var db = _db) 
-            {
-                db.Database.EnsureCreated();
-            }
-            return Results.Json(new { unswer = "ok" });
         }
 
         [Authorize(Roles = "admin")]
