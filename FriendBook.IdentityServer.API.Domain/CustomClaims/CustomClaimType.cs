@@ -3,6 +3,6 @@
     public static class CustomClaimType
     {
         public const string AccountId = "Id";
-        public const string Post = "post";
+        public const string Profession = "post";
     }
 }
