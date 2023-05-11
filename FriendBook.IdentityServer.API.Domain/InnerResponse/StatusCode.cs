@@ -1,4 +1,4 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.Enums
+﻿namespace FriendBook.IdentityServer.API.Domain.InnerResponse
 {
     public enum StatusCode
     {
@@ -10,8 +10,12 @@
         AccountRead = 4,
         AccountAuthenticate = 5,
 
+
         OK = 200,
         OKNoContent = 204,
+        ErrorAuthenticate = 301,
+        ErrorRegistration = 302,
+        AccountNotAuthenticate = 401,
         InternalServerError = 500,
     }
 }

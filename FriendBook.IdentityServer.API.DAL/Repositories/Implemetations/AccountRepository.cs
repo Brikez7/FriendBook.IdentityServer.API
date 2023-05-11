@@ -1,7 +1,7 @@
 ﻿using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.Entities;
 
-namespace FriendBook.IdentityServer.API.DAL.Repositories
+namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
 {
     public class AccountRepository : IAccountRepository
     {

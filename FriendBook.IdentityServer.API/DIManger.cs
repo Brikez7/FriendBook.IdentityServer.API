@@ -1,6 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.BLL.Services;
-using FriendBook.IdentityServer.API.DAL.Repositories;
+using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -2,12 +2,11 @@
 
 namespace FriendBook.IdentityServer.API.DAL.Repositories.Interfaces
 {
-    public interface IAccountRepository
+    public interface IContactRepository
     {
-        public Task<Account> AddAsync(Account entity);
-        public Account Update(Account entity);
-        public bool Delete(Account entity);
-        public IQueryable<Account> GetAll();
+        public bool Clear(Account entity);
         public Task<bool> SaveAsync();
+        public Account Update(Account entity);
+        public IQueryable<Account> GetAll();
     }
 }

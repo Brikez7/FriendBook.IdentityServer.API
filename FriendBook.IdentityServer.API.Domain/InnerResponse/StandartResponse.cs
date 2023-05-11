@@ -1,6 +1,4 @@
-﻿using FriendBook.IdentityServer.API.Domain.Enums;
-
-namespace FriendBook.IdentityServer.API.Domain.InnerResponse
+﻿namespace FriendBook.IdentityServer.API.Domain.InnerResponse
 {
     public class StandartResponse<T> : BaseResponse<T>
     {

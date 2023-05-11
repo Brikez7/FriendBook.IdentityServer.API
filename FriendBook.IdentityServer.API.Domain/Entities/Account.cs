@@ -27,5 +27,13 @@ namespace FriendBook.IdentityServer.API.Domain.Entities
         public Account()
         {
         }
+
+        public Account(UserContactDTO userContactDTO)
+        {
+        }
+
+        public Account(UserContactDTO userContactDTO, Guid userId) : this(userContactDTO)
+        {
+        }
     }
 }

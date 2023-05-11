@@ -1,7 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
-using FriendBook.IdentityServer.API.Domain.Enums;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using HCL.IdentityServer.API.Domain.Enums;
@@ -40,14 +39,15 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                     };
                 }
                 CreatePasswordHash(DTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                /// Add mapper
                 var newAccount = new Account(DTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
+                ///
                 newAccount = (await _accountService.CreateAccount(newAccount)).Data;
                 return new StandartResponse<(string, Guid)>()
                 {
                     Data = (await Authenticate(DTO)).Data,
                     StatusCode = StatusCode.AccountCreate
                 };
-
             }
             catch (Exception ex)
             {
@@ -93,11 +93,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public string GetToken(Account account)
         {
-            /// имг паф и пароль?
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier,account.Login),
-                new Claim(CustomClaimType.Profession, account.Profession),
+                //new Claim(CustomClaimType.Profession, account.Profession),
                 new Claim(CustomClaimType.AccountId, account.Id.ToString())
             };
 

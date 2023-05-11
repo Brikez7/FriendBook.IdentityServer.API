@@ -1,29 +1,24 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/Identity[controller]")]
     public class IdentityServerController : ControllerBase
     {
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IAccountService _accountService;
-        private readonly AppDBContext _db;
 
-        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService, AppDBContext appDB)
+        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService)
         {
             _logger = logger;
             _registrationService = registrationService;
             _accountService = accountService;
-            _db = appDB;
         }
 
         [HttpPost("Authenticate/")]
@@ -33,15 +28,17 @@ namespace FriendBook.IdentityServer.API.Controllers
             {
                 return Results.NotFound();
             }
-            var resourse = await _registrationService.Authenticate(accountDTO);
-            Response.Cookies.SetJwtCookie((resourse.Data.Item1, "1", resourse.Data.Item2));
-            if (resourse.Data.Item1 == null)
+            var response = await _registrationService.Authenticate(accountDTO);
+            Response.Cookies.SetJwtCookie((response.Data.Item1, "1", response.Data.Item2));
+            if (response.Data.Item1 == null)
             {
-                return Results.NoContent();
+                response.Message = "Error Authenticate";
+                response.StatusCode = Domain.InnerResponse.StatusCode.ErrorAuthenticate;
+                return Results.Json(response);
             }
             else
             {
-                return Results.Json(new { token = resourse.Data.Item1, id = resourse.Data.Item2 });
+                return Results.Json(new { token = response.Data.Item1, id = response.Data.Item2 });
             }
         }
 
@@ -50,17 +47,19 @@ namespace FriendBook.IdentityServer.API.Controllers
         {
             if (accountDTO == null)
             {
-                return Results.NotFound();
-            }
-            var resourse = await _registrationService.Registration(accountDTO);
-            Response.Cookies.SetJwtCookie((resourse.Data.Item1,"1", resourse.Data.Item2));
-            if (resourse.Data.Item1 == null)
-            {
                 return Results.NoContent();
+            }
+            var response = await _registrationService.Registration(accountDTO);
+            Response.Cookies.SetJwtCookie((response.Data.Item1,"1", response.Data.Item2));
+            if (response.Data.Item1 == null)
+            {
+                response.Message = "Error registration";
+                response.StatusCode = Domain.InnerResponse.StatusCode.ErrorRegistration;
+                return Results.Json(response);
             }
             else
             {
-                return Results.Json(new { token = resourse.Data.Item1, id = resourse.Data.Item2 });
+                return Results.Json(new { token = response.Data.Item1, id = response.Data.Item2 });
             }
         }
 
@@ -68,14 +67,16 @@ namespace FriendBook.IdentityServer.API.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IResult> Delete(Guid id)
         {
-            var resourse = await _accountService.DeleteAccount(x => x.Id == id);
-            if (resourse.Data)
+            var response = await _accountService.DeleteAccount(x => x.Id == id);
+            if (response.Data)
             {
-                return Results.Ok(resourse.Data);
+                return Results.Json(response);
             }
             else
             {
-                return Results.StatusCode(500);
+                response.Message = "Error. Entity not delete.";
+                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
+                return Results.Json(response);
             }
         }
     }
