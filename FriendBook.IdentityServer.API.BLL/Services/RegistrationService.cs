@@ -26,16 +26,20 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             _options = options.Value;
             _accountService = accountService;
         }
-        public async Task<BaseResponse<(string, Guid)>> Registration(AccountDTO DTO)
+        public async Task<BaseResponse<string>> Registration(AccountDTO DTO)
         {
             try
             {
+                ///
+                Account account = new Account(DTO);
+                ///
                 var accountOnRegistration = (await _accountService.GetAccount(x => x.Login == DTO.Login)).Data;
                 if (accountOnRegistration != null)
                 {
-                    return new StandartResponse<(string, Guid)>()
+                    return new StandartResponse<string>()
                     {
-                        Message = "Account with that login alredy exist"
+                        Message = "Account with that login alredy exist",
+                        StatusCode = StatusCode.AccountWithLoginExists
                     };
                 }
                 CreatePasswordHash(DTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -43,7 +47,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 var newAccount = new Account(DTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
                 ///
                 newAccount = (await _accountService.CreateAccount(newAccount)).Data;
-                return new StandartResponse<(string, Guid)>()
+                return new StandartResponse<string>()
                 {
                     Data = (await Authenticate(DTO)).Data,
                     StatusCode = StatusCode.AccountCreate
@@ -52,7 +56,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"[Registration] : {ex.Message}");
-                return new StandartResponse<(string, Guid)>()
+                return new StandartResponse<string>()
                 {
                     Message = ex.Message,
                     StatusCode = StatusCode.InternalServerError,
@@ -60,7 +64,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             }
         }
 
-        public async Task<BaseResponse<(string, Guid)>> Authenticate(AccountDTO DTO)
+        public async Task<BaseResponse<string>> Authenticate(AccountDTO DTO)
         {
             try
             {
@@ -68,22 +72,23 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 if (account.Data == null ||
                     !VerifyPasswordHash(DTO.Password, Convert.FromBase64String(account.Data.Password), Convert.FromBase64String(account.Data.Salt)))
                 {
-                    return new StandartResponse<(string, Guid)>()
+                    return new StandartResponse<string>()
                     {
-                        Message = "account not found"
+                        Message = "account not found",
+                        StatusCode = StatusCode.ErrorAuthenticate
                     };
                 }
                 string token = GetToken(account.Data);
-                return new StandartResponse<(string, Guid)>()
+                return new StandartResponse<string>()
                 {
-                    Data = (token, (Guid)account.Data.Id),
+                    Data = token,
                     StatusCode = StatusCode.AccountAuthenticate
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"[Authenticate] : {ex.Message}");
-                return new StandartResponse<(string, Guid)>()
+                return new StandartResponse<string>()
                 {
                     Message = ex.Message,
                     StatusCode = StatusCode.InternalServerError,
@@ -96,7 +101,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier,account.Login),
-                //new Claim(CustomClaimType.Profession, account.Profession),
+                new Claim(CustomClaimType.Password, account.Password),
                 new Claim(CustomClaimType.AccountId, account.Id.ToString())
             };
 

@@ -1,5 +1,3 @@
-
-using FriendBook.IdentityServer.API;
 using FriendBook.IdentityServer.API.DAL;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +33,6 @@ namespace FriendBook.IdentityServer.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

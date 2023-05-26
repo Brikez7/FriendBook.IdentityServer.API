@@ -1,13 +1,14 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO;
-using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
     [ApiController]
-    [Route("api/Identity[controller]")]
+    [Route("api/[controller]")]
     public class IdentityServerController : ControllerBase
     {
         private readonly ILogger<IdentityServerController> _logger;
@@ -21,46 +22,64 @@ namespace FriendBook.IdentityServer.API.Controllers
             _accountService = accountService;
         }
 
-        [HttpPost("Authenticate/")]
+        [HttpPost("authenticate/")]
         public async Task<IResult> Authenticate(AccountDTO accountDTO)
         {
             if (accountDTO == null)
             {
-                return Results.NotFound();
+                return Results.Json(new StandartResponse<string>()
+                {
+                    Message = "Data null",
+                    StatusCode = Domain.InnerResponse.StatusCode.OKNoContent
+                });
             }
             var response = await _registrationService.Authenticate(accountDTO);
-            Response.Cookies.SetJwtCookie((response.Data.Item1, "1", response.Data.Item2));
-            if (response.Data.Item1 == null)
-            {
-                response.Message = "Error Authenticate";
-                response.StatusCode = Domain.InnerResponse.StatusCode.ErrorAuthenticate;
-                return Results.Json(response);
-            }
-            else
-            {
-                return Results.Json(new { token = response.Data.Item1, id = response.Data.Item2 });
-            }
+
+            return Results.Json(response);
         }
 
-        [HttpPost("Registration/")]
-        public async Task<IResult> Registration(AccountDTO accountDTO)
+        [HttpPost("registration/")]
+        public async Task<IActionResult> Registration([FromQuery] AccountDTO accountDTO)
         {
             if (accountDTO == null)
             {
-                return Results.NoContent();
+                return Ok(new StandartResponse<string>()
+                {
+                    Message = "Data null",
+                    StatusCode = Domain.InnerResponse.StatusCode.OKNoContent
+                });
             }
+
             var response = await _registrationService.Registration(accountDTO);
-            Response.Cookies.SetJwtCookie((response.Data.Item1,"1", response.Data.Item2));
-            if (response.Data.Item1 == null)
-            {
-                response.Message = "Error registration";
-                response.StatusCode = Domain.InnerResponse.StatusCode.ErrorRegistration;
-                return Results.Json(response);
-            }
-            else
-            {
-                return Results.Json(new { token = response.Data.Item1, id = response.Data.Item2 });
-            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("checkToken/")]
+        [Authorize]
+        public async Task<IActionResult> CheckToken()
+        {
+            string? login = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            string? password = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+            var AccountDTO = new AccountDTO{ Login = login, Password = password };
+
+            BaseResponse<string> response = await _registrationService.Authenticate(AccountDTO);
+            
+            return Ok(response);
+        }
+
+        [HttpGet("checkToken2/")]
+        public async Task<IActionResult> CheckToken2()
+        {
+            string? login = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            string? password = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+            var AccountDTO = new AccountDTO { Login = login, Password = password };
+
+            BaseResponse<string> response = await _registrationService.Authenticate(AccountDTO);
+
+            return Ok(response);
         }
 
         [Authorize(Roles = "admin")]

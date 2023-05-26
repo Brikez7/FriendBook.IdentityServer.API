@@ -29,6 +29,8 @@ namespace FriendBook.IdentityServer.API
             var audience = webApplicationBuilder.Configuration.GetSection("JWTSettings:Audience").Value;
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
+            Console.WriteLine(secretKey, issuer, audience, signingKey);
+
             webApplicationBuilder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

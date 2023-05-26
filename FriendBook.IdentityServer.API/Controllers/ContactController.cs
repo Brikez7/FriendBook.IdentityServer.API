@@ -3,11 +3,13 @@ using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using HCL.IdentityServer.API.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
-    [Route("api/Contact[controller]")]
+    [Route("api/[controller]")]
+    [Authorize]
     public class ContactController : ControllerBase
     {
         private readonly ILogger<ContactController> _logger;

@@ -23,7 +23,11 @@ namespace FriendBook.IdentityServer.API.Domain.Entities
             CreateDate = DateTime.Now;
             Salt = salt;
         }
-
+        public Account(AccountDTO model) 
+        {
+            Login = model.Login;
+            Password = model.Password;
+        }
         public Account()
         {
         }
