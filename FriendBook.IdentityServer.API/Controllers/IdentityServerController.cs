@@ -72,14 +72,8 @@ namespace FriendBook.IdentityServer.API.Controllers
         [HttpGet("checkToken2/")]
         public async Task<IActionResult> CheckToken2()
         {
-            string? login = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            string? password = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-
-            var AccountDTO = new AccountDTO { Login = login, Password = password };
-
-            BaseResponse<string> response = await _registrationService.Authenticate(AccountDTO);
-
-            return Ok(response);
+            
+            return Ok("ok");
         }
 
         [Authorize(Roles = "admin")]
