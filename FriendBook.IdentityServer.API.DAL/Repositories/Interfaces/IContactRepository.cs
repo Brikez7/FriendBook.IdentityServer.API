@@ -6,7 +6,7 @@ namespace FriendBook.IdentityServer.API.DAL.Repositories.Interfaces
     {
         public bool Clear(Account entity);
         public Task<bool> SaveAsync();
-        public Account Update(Account entity);
+        public Account? Update(Account entity);
         public IQueryable<Account> GetAll();
     }
 }

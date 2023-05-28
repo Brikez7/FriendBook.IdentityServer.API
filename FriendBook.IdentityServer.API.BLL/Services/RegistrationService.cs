@@ -100,8 +100,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier,account.Login),
-                new Claim(CustomClaimType.Password, account.Password),
+                new Claim(CustomClaimType.Login,account.Login),
                 new Claim(CustomClaimType.AccountId, account.Id.ToString())
             };
 

@@ -1,22 +1,36 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.DTO
+﻿using FriendBook.IdentityServer.API.Domain.Entities;
+
+namespace FriendBook.IdentityServer.API.Domain.DTO
 {
     public class UserContactDTO
     {
         public string? FullName { get; set; }
         public string? Email { get; set; }
-        public string? Profession { get; set; }
+        public string? Login { get; set; }
         public string? Info { get; set; }
-        public string? Company { get; set; }
+        public string? Profession { get; set; }
         public string? Telephone { get; set; }
 
-        public UserContactDTO(string? fullName, string? email, string? profession, string? info, string? company, string? telephone)
+        public UserContactDTO() { }
+
+        public UserContactDTO(string? fullName, string? email, string? login, string? info, string? profession, string? telephone)
         {
             FullName = fullName;
             Email = email;
-            Profession = profession;
+            Login = login;
             Info = info;
-            Company = company;
+            Profession = profession;
             Telephone = telephone;
+        }
+
+        public UserContactDTO(Account entity)
+        {
+            FullName = entity.FullName;
+            Email = entity.Email;
+            Login = entity.Login;
+            Info = entity.Info;
+            Profession = entity.Profession;
+            Telephone = entity.Telephone;
         }
     }
 }

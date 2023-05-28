@@ -34,10 +34,17 @@ namespace FriendBook.IdentityServer.API.Domain.Entities
 
         public Account(UserContactDTO userContactDTO)
         {
+            FullName = userContactDTO.FullName;
+            Email = userContactDTO.Email;
+            Login = userContactDTO.Login;
+            Info = userContactDTO.Info;
+            Profession = userContactDTO.Profession;
+            Telephone = userContactDTO.Telephone;
         }
 
         public Account(UserContactDTO userContactDTO, Guid userId) : this(userContactDTO)
         {
+            Id = userId;
         }
     }
 }

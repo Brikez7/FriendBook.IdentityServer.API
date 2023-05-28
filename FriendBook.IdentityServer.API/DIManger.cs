@@ -14,12 +14,14 @@ namespace FriendBook.IdentityServer.API
         public static void AddRepositores(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            webApplicationBuilder.Services.AddScoped<IContactRepository, ContactRepository>();
         }
 
         public static void AddServices(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IAccountService, AccountService>();
             webApplicationBuilder.Services.AddScoped<IRegistrationService, RegistrationService>();
+            webApplicationBuilder.Services.AddScoped<IContactService, ContactService>();
         }
         public static void AddJWT(this WebApplicationBuilder webApplicationBuilder)
         {

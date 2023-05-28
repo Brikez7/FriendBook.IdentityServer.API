@@ -100,6 +100,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             }
         }
 
+
         public async Task<BaseResponse<IEnumerable<Account>>> GetAllAccounts()
         {
             try
@@ -109,7 +110,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 {
                     return new StandartResponse<IEnumerable<Account>>()
                     {
-                        Message = "entity not found"
+                        Message = "entity not found",
+                        StatusCode= StatusCode.InternalServerError,
                     };
                 }
                 return new StandartResponse<IEnumerable<Account>>()

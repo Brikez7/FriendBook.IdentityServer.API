@@ -1,6 +1,5 @@
 ﻿using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.Entities;
-using System.Xml;
 
 namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
 {
@@ -38,11 +37,24 @@ namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
             return true;
         }
 
-        public Account Update(Account entity)
+        public Account? Update(Account entity)
         {
-            _db.Accounts.Attach(entity);
-            _db.Entry(entity).Property(x => new {x.Info,x.FullName,x.Telephone,x.Email,x.Company,x.Profession }).IsModified = true;
-            return entity;
+            var existingEntity = _db.Accounts.SingleOrDefault(x => x.Id == entity.Id);
+            if (existingEntity != null)
+            {
+                existingEntity.Info = entity.Info;
+                existingEntity.FullName = entity.FullName;
+                existingEntity.Telephone = entity.Telephone;
+                existingEntity.Email = entity.Email;
+                existingEntity.Login = entity.Login;
+                existingEntity.Profession = entity.Profession;
+
+                return entity;
+            }
+            else 
+            {
+                return null;
+            }
         }
     }
 }

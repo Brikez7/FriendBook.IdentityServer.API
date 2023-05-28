@@ -1,7 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using HCL.IdentityServer.API.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +19,13 @@ namespace FriendBook.IdentityServer.API.Controllers
             _logger = logger;
             _contactService = contactService;
         }
-        [HttpGet("Get/")]
-        public async Task<IResult> GetContactInformation(Guid Id)
+
+        [HttpGet("getMyContact")]
+        public async Task<IResult> GetContactInformation()
         {
-            var response = await _contactService.GetContact(x => x.Id == Id);
+            string? id = User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value;
+            var idGuid = Guid.Parse(id);
+            var response = await _contactService.GetContact(x => x.Id == idGuid);
             if (response.Data == null)
             {
                 response.Message = "entity not faund";
@@ -32,32 +34,39 @@ namespace FriendBook.IdentityServer.API.Controllers
             }
             return Results.Json(response);
         }
-        [HttpPut("Update/")]
-        public async Task<IResult> UpdateContactInformation(UserContactDTO userContactDTO)
+
+        [HttpGet("getContact{Id}")]
+        public async Task<IResult> GetContactInformation([FromBody] string Id)
         {
-            Guid userId;
-            if (Guid.TryParse(User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value, out userId))
+            Guid idGuid = Guid.Parse(Id);
+            var response = await _contactService.GetContact(x => x.Id == idGuid);
+            if (response.Data == null)
             {
-                Account account = new Account(userContactDTO, userId);
-                var response = await _contactService.UpdateContact(account);
-                if (response.Data == null)
-                {
-                    response.Message = "entity not faund";
-                    response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
-                    return Results.Json(response);
-                }
+                response.Message = "entity not faund";
+                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
                 return Results.Json(response);
             }
-            else
-            {
-                return Results.Json(new StandartResponse<Account>
-                {
-                    StatusCode = Domain.InnerResponse.StatusCode.AccountNotAuthenticate,
-                    Message = "Coockie has empty"
-                });
-            }
+            return Results.Json(response);
         }
-        [HttpDelete("Clear/")]
+
+        [HttpPut("updateMyContactInformation")]
+        public async Task<IResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
+        {
+            string? id = User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value;
+            var idGuid = Guid.Parse(id);
+
+            Account account = new Account(userContactDTO, idGuid);
+            var response = await _contactService.UpdateContact(account);
+            if (response.Data == null)
+            {
+                response.Message = "Account not faund";
+                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
+                return Results.Json(response);
+            }
+
+            return Results.Json(response);
+        }
+        [HttpDelete("Clear")]
         public async Task<IResult> ClearContactInformation(Guid Id)
         {
             var response = await _contactService.ClearContact(x => x.Id == Id);
@@ -68,6 +77,22 @@ namespace FriendBook.IdentityServer.API.Controllers
                 return Results.Json(response);
             }
             return Results.Json(response);
+        }
+
+        [HttpGet("GetProfiles/{login}")]
+        public async Task<IActionResult> GetProfiles(string login)
+        {
+            string? id = User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value;
+            var userId = Guid.Parse(id);
+
+            var response = await _contactService.GetAllProphile(login, userId);
+            if (response.Data == null)
+            {
+                response.Message = "entity not faund";
+                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
+                return Ok(Results.Json(response));
+            }
+            return Ok(Results.Json(response));
         }
     }
 }
