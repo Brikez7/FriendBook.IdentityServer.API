@@ -121,6 +121,24 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         {
             try
             {
+                if (account.Login == "" || account.Login is null) 
+                {
+                    return new StandartResponse<UserContactDTO>()
+                    {
+                        Message = "Login is null",
+                        StatusCode = StatusCode.InternalServerError,
+                    };
+                }
+
+                if (await _contactRepository.GetAll().AnyAsync(x => x.Login == account.Login)) 
+                {
+                    return new StandartResponse<UserContactDTO>()
+                    {
+                        Message = "an account with this username already exists",
+                        StatusCode = StatusCode.InternalServerError,
+                    };
+                }
+
                 var updatedAccount = _contactRepository.Update(account);
 
                 if (updatedAccount is null) 

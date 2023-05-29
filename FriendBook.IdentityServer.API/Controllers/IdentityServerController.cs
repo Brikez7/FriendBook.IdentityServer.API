@@ -25,7 +25,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("authenticate/")]
-        public async Task<IResult> Authenticate( AccountDTO accountDTO)
+        public async Task<IResult> Authenticate(AccountDTO accountDTO)
         {
             if (accountDTO == null)
             {
@@ -41,7 +41,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("registration/")]
-        public async Task<IActionResult> Registration( AccountDTO accountDTO)
+        public async Task<IActionResult> Registration(AccountDTO accountDTO)
         {
             if (accountDTO == null)
             {
@@ -58,17 +58,25 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpGet("checkUserExists")]
-        public async Task<IActionResult> CheckUserExists(string Id)
+        public async Task<IActionResult> CheckUserExists([FromQuery] string Id)
         {
-            var userId = Guid.Parse(Id);
+            Guid userId;
+            if (Guid.TryParse(Id, out userId))
+            {
+                var response = await _accountService.GetAccount(x => x.Id == userId);
 
-            var response = await _accountService.GetAccount(x => x.Id == userId);
-
+                return Ok(new StandartResponse<bool>()
+                {
+                    Data = response.Data is not null
+                });
+            }
             return Ok(new StandartResponse<bool>()
             {
-                Data = response.Data is not null
+                Message = "Id not Guid",
+                StatusCode = Domain.InnerResponse.StatusCode.AccountNotAuthenticate
             });
         }
+    
 
         [HttpGet("checkToken/")]
         [Authorize]
