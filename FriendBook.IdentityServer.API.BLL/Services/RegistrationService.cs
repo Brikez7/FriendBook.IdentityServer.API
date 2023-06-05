@@ -29,23 +29,23 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         }
         public async Task<BaseResponse<string>> Registration(AccountDTO accountDTO)
         {
-            if (await _accountService.GetAllAccounts().Data.AnyAsync(x => x.Login == accountDTO.Login))
+            if (!await _accountService.GetAllAccounts().Data.AnyAsync(x => x.Login == accountDTO.Login))
             {
+                CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
+
+                newAccount = (await _accountService.CreateAccount(newAccount)).Data;
                 return new StandartResponse<string>()
                 {
-                    Message = "Account with that login alredy exist",
-                    StatusCode = StatusCode.AccountWithLoginExists
+                    Data = (await Authenticate(accountDTO)).Data,
+                    StatusCode = StatusCode.AccountCreate
                 };
             }
-            CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
-
-            newAccount = (await _accountService.CreateAccount(newAccount)).Data;
             return new StandartResponse<string>()
             {
-                Data = (await Authenticate(accountDTO)).Data,
-                StatusCode = StatusCode.AccountCreate
+                Message = "Account with that login alredy exist",
+                StatusCode = StatusCode.AccountWithLoginExists
             };
         }
 

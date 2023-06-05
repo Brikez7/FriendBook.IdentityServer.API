@@ -28,9 +28,11 @@ namespace FriendBook.IdentityServer.API
         public static void AddJWT(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.Configure<JWTSettings>(webApplicationBuilder.Configuration.GetSection("JWTSettings"));
+
             var secretKey = webApplicationBuilder.Configuration.GetSection("JWTSettings:SecretKey").Value;
             var issuer = webApplicationBuilder.Configuration.GetSection("JWTSettings:Issuer").Value;
             var audience = webApplicationBuilder.Configuration.GetSection("JWTSettings:Audience").Value;
+
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
             Console.WriteLine(secretKey, issuer, audience, signingKey);
