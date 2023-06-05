@@ -43,12 +43,5 @@ namespace FriendBook.IdentityServer.API.Controllers
             }
             return Results.Json(new { unswer = "ok" });
         }
-        [HttpGet("TestClaims")]
-        public IResult GetClaims()
-        {
-            var identity = (HttpContext.User.Identity as ClaimsIdentity).Claims;
-            var claims = _registrationService.ReadToken(Request.Cookies[CookieNames.JWTToken]);
-            return Results.Json(claims);
-        }
     }
 }
