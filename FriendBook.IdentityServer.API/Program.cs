@@ -15,8 +15,10 @@ namespace FriendBook.IdentityServer.API
             builder.AddServices();
             builder.AddJWT();
 
-            builder.Services.AddDbContext<AppDBContext>(opt => opt.UseNpgsql(
-                builder.Configuration.GetConnectionString(AppDBContext.NameConnection)));
+            builder.AddHostedServices();
+
+            builder.Services.AddDbContext<IdentityServerContext>(opt => opt.UseNpgsql(
+            builder.Configuration.GetConnectionString(IdentityServerContext.NameConnection)));
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

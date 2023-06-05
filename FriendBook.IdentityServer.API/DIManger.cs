@@ -1,8 +1,10 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BackgroundHostedService;
+using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.BLL.Services;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -55,6 +57,14 @@ namespace FriendBook.IdentityServer.API
                     LifetimeValidator = JwtHelper.CustomLifeTimeValidator
                 };
             });
+        }
+        public static void AddHostedServices(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.AddHostedService<CheckDBHostedService>();
+        }
+        public static void AddMiddleware(this WebApplication webApplication)
+        {
+            webApplication.UseMiddleware<ExceptionHandlingMiddleware>();
         }
     }
 }

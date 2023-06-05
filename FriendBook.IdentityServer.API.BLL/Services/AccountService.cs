@@ -1,5 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
+using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using Microsoft.EntityFrameworkCore;
@@ -19,139 +20,100 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         }
         public async Task<BaseResponse<Account>> CreateAccount(Account account)
         {
-            try
+            var createdAccount = await _accountRepository.AddAsync(account);
+            await _accountRepository.SaveAsync();
+            return new StandartResponse<Account>()
             {
-                var createdAccount = await _accountRepository.AddAsync(account);
-                await _accountRepository.SaveAsync();
-                return new StandartResponse<Account>()
-                {
-                    Data = createdAccount,
-                    StatusCode = StatusCode.AccountCreate
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[CreateAccount] : {ex.Message}");
-                return new StandartResponse<Account>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = createdAccount,
+                StatusCode = StatusCode.AccountCreate
+            };
         }
 
         public async Task<BaseResponse<bool>> DeleteAccount(Expression<Func<Account, bool>> expression)
         {
-            try
+            var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
+            if (entity == null)
             {
-                var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
-                if (entity == null)
-                {
-                    return new StandartResponse<bool>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                var accountIsDelete = _accountRepository.Delete(entity);
-                await _accountRepository.SaveAsync();
                 return new StandartResponse<bool>()
                 {
-                    Data = accountIsDelete,
-                    StatusCode = StatusCode.AccountDelete
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[DeleteAccount] : {ex.Message}");
-                return new StandartResponse<bool>()
-                {
-                    Message = ex.Message,
+                    Message = "entity not found",
                     StatusCode = StatusCode.InternalServerError,
                 };
             }
+            var accountIsDelete = _accountRepository.Delete(entity);
+            await _accountRepository.SaveAsync();
+            return new StandartResponse<bool>()
+            {
+                Data = accountIsDelete,
+                StatusCode = StatusCode.AccountDelete
+            };
         }
 
         public async Task<BaseResponse<Account>> GetAccount(Expression<Func<Account, bool>> expression)
         {
-            try
+            var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
+            if (entity == null)
             {
-                var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
-                if (entity == null)
-                {
-                    return new StandartResponse<Account>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
                 return new StandartResponse<Account>()
                 {
-                    Data = entity,
-                    StatusCode = StatusCode.AccountRead
+                    Message = "entity not found",
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
-            catch (Exception ex)
+            return new StandartResponse<Account>()
             {
-                _logger.LogError(ex, $"[GetAccount] : {ex.Message}");
-                return new StandartResponse<Account>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = entity,
+                StatusCode = StatusCode.AccountRead
+            };
         }
 
 
-        public async Task<BaseResponse<IEnumerable<Account>>> GetAllAccounts()
+        public BaseResponse<IQueryable<Account>> GetAllAccounts()
         {
-            try
+            var contents = _accountRepository.GetAll();
+            if (contents == null)
             {
-                var contents = await _accountRepository.GetAll().ToListAsync();
-                if (contents == null)
+                return new StandartResponse<IQueryable<Account>>()
                 {
-                    return new StandartResponse<IEnumerable<Account>>()
-                    {
-                        Message = "entity not found",
-                        StatusCode= StatusCode.InternalServerError,
-                    };
-                }
-                return new StandartResponse<IEnumerable<Account>>()
-                {
-                    Data = contents,
-                    StatusCode = StatusCode.AccountRead
+                    Message = "entity not found",
+                    StatusCode= StatusCode.InternalServerError,
                 };
             }
-            catch (Exception ex)
+            return new StandartResponse<IQueryable<Account>>()
             {
-                _logger.LogError(ex, $"[GetAllAccounts] : {ex.Message}");
-                return new StandartResponse<IEnumerable<Account>>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = contents,
+                StatusCode = StatusCode.AccountRead
+            };
         }
 
-        public async Task<BaseResponse<Account>> UpdateAccount(Account account)
+        public async Task<BaseResponse<Account>> UpdateAccount(AccountDTO accountDTO)
         {
-            try
+            var account = new Account(accountDTO);
+
+            var updatedAccount = _accountRepository.Update(account);
+            await _accountRepository.SaveAsync();
+
+            return new StandartResponse<Account>()
             {
-                var updatedAccount = _accountRepository.Update(account);
-                await _accountRepository.SaveAsync();
-                return new StandartResponse<Account>()
-                {
-                    Data = updatedAccount,
-                    StatusCode = StatusCode.AccountUpdate,
-                };
-            }
-            catch (Exception ex)
+                Data = updatedAccount,
+                StatusCode = StatusCode.AccountUpdate,
+            };
+            
+        }
+        public async Task<BaseResponse<Tuple<Guid, string>[]>> GenLogins(Guid[] usersIds)
+        {
+            var loginWithId = await _accountRepository.GetAll()
+                                                      .Select(x => new { x.Id, x.Login })
+                                                      .ToListAsync();
+
+            var SearchedLogins = loginWithId.Where(x => usersIds.Any(id => id == x.Id))
+                                           .Select(x => new Tuple<Guid, string>((Guid)x.Id, x.Login))
+                                           .ToArray();
+
+            return new StandartResponse<Tuple<Guid, string>[]>
             {
-                _logger.LogError(ex, $"[UpdateAccount] : {ex.Message}");
-                return new StandartResponse<Account>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = SearchedLogins
+            };
         }
     }
 }

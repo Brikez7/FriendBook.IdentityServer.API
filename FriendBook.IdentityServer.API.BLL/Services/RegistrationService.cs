@@ -1,9 +1,10 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using HCL.IdentityServer.API.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -26,74 +27,46 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             _options = options.Value;
             _accountService = accountService;
         }
-        public async Task<BaseResponse<string>> Registration(AccountDTO DTO)
+        public async Task<BaseResponse<string>> Registration(AccountDTO accountDTO)
         {
-            try
+            if (await _accountService.GetAllAccounts().Data.AnyAsync(x => x.Login == accountDTO.Login))
             {
-                ///
-                Account account = new Account(DTO);
-                ///
-                var accountOnRegistration = (await _accountService.GetAccount(x => x.Login == DTO.Login)).Data;
-                if (accountOnRegistration != null)
-                {
-                    return new StandartResponse<string>()
-                    {
-                        Message = "Account with that login alredy exist",
-                        StatusCode = StatusCode.AccountWithLoginExists
-                    };
-                }
-                CreatePasswordHash(DTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                /// Add mapper
-                var newAccount = new Account(DTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
-                ///
-                newAccount = (await _accountService.CreateAccount(newAccount)).Data;
                 return new StandartResponse<string>()
                 {
-                    Data = (await Authenticate(DTO)).Data,
-                    StatusCode = StatusCode.AccountCreate
+                    Message = "Account with that login alredy exist",
+                    StatusCode = StatusCode.AccountWithLoginExists
                 };
             }
-            catch (Exception ex)
+            CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
+
+            newAccount = (await _accountService.CreateAccount(newAccount)).Data;
+            return new StandartResponse<string>()
             {
-                _logger.LogError(ex, $"[Registration] : {ex.Message}");
-                return new StandartResponse<string>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = (await Authenticate(accountDTO)).Data,
+                StatusCode = StatusCode.AccountCreate
+            };
         }
 
-        public async Task<BaseResponse<string>> Authenticate(AccountDTO DTO)
+        public async Task<BaseResponse<string>> Authenticate(AccountDTO accountDTO)
         {
-            try
+            var account = await _accountService.GetAccount(x => x.Login == accountDTO.Login);
+            if (account.Data == null ||
+                !VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Data.Password), Convert.FromBase64String(account.Data.Salt)))
             {
-                var account = await _accountService.GetAccount(x => x.Login == DTO.Login);
-                if (account.Data == null ||
-                    !VerifyPasswordHash(DTO.Password, Convert.FromBase64String(account.Data.Password), Convert.FromBase64String(account.Data.Salt)))
-                {
-                    return new StandartResponse<string>()
-                    {
-                        Message = "account not found",
-                        StatusCode = StatusCode.ErrorAuthenticate
-                    };
-                }
-                string token = GetToken(account.Data);
                 return new StandartResponse<string>()
                 {
-                    Data = token,
-                    StatusCode = StatusCode.AccountAuthenticate
+                    Message = "account not found",
+                    StatusCode = StatusCode.ErrorAuthenticate
                 };
             }
-            catch (Exception ex)
+            string token = GetToken(account.Data);
+            return new StandartResponse<string>()
             {
-                _logger.LogError(ex, $"[Authenticate] : {ex.Message}");
-                return new StandartResponse<string>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = token,
+                StatusCode = StatusCode.AccountAuthenticate
+            };
         }
 
         public string GetToken(Account account)
@@ -118,14 +91,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
-        public IEnumerable<Claim> ReadToken(string tokenstring)
-        {
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-            var claims = token.Claims;
-            return claims;
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -134,7 +100,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             }
         }
 
-        private bool VerifyPasswordHash(string Password, byte[] passwordHash, byte[] passwordSalt)
+        private static bool VerifyPasswordHash(string Password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {

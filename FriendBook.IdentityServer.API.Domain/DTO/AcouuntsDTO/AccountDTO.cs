@@ -1,6 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.Domain.Entities;
 
-namespace FriendBook.IdentityServer.API.Domain.DTO
+namespace FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO
 {
     public class AccountDTO
     {

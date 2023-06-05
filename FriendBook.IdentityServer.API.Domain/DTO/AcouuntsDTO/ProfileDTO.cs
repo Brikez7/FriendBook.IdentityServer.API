@@ -1,4 +1,4 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.DTO
+﻿namespace FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO
 {
     public class ProfileDTO
     {
@@ -10,7 +10,7 @@
         }
 
         public string Login { get; set; } = null!;
-        public string? FullName{ get; set; }
+        public string? FullName { get; set; }
         public Guid Id { get; set; }
     }
 }

@@ -15,9 +15,9 @@ namespace FriendBook.IdentityServer.API.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IRegistrationService _registrationService;
-        private readonly AppDBContext _db;
+        private readonly IdentityServerContext _db;
 
-        public HomeController(ILogger<HomeController> logger, IRegistrationService registrationService, AppDBContext appDB)
+        public HomeController(ILogger<HomeController> logger, IRegistrationService registrationService, IdentityServerContext appDB)
         {
             _logger = logger;
             _registrationService = registrationService;

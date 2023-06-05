@@ -1,6 +1,7 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
+using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using HCL.IdentityServer.API.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,18 +24,26 @@ namespace FriendBook.IdentityServer.API.Controllers
         [HttpGet("getMyContact")]
         public async Task<IActionResult> GetContactInformation()
         {
-            string? id = User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value;
-            var idGuid = Guid.Parse(id);
-            var response = await _contactService.GetContact(x => x.Id == idGuid);
+            if (Guid.TryParse(User.Claims.First(x => x.Type == CustomClaimType.AccountId).Value, out Guid idUser))
+            {
+                var response = await _contactService.GetContact(x => x.Id == idUser);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            else
+            {
+                return Ok(new StandartResponse<UserContactDTO>
+                {
+                    Message = "Not valid token",
+                    StatusCode = Domain.InnerResponse.StatusCode.InternalServerError
+                });
+            }
         }
 
-        [HttpGet("getContact{Id}")]
-        public async Task<IActionResult> GetContactInformation(string Id)
+        [HttpGet("getContact/{id}")]
+        public async Task<IActionResult> GetContactInformation([FromRoute] Guid id)
         {
-            Guid idGuid = Guid.Parse(Id);
-            var response = await _contactService.GetContact(x => x.Id == idGuid);
+            var response = await _contactService.GetContact(x => x.Id == id);
 
             return Ok(response);
         }
@@ -42,41 +51,41 @@ namespace FriendBook.IdentityServer.API.Controllers
         [HttpPut("updateMyContactInformation")]
         public async Task<IActionResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
         {
-            string? id = User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value;
-            var idGuid = Guid.Parse(id);
-
-            Account account = new Account(userContactDTO, idGuid);
-            var response = await _contactService.UpdateContact(account);
-
-            return Ok(response);
-        }
-        [HttpDelete("Clear")]
-        public async Task<IResult> ClearContactInformation(Guid Id)
-        {
-            var response = await _contactService.ClearContact(x => x.Id == Id);
-            if (!response.Data)
+            if (Guid.TryParse(User.Claims.First(x => x.Type == CustomClaimType.AccountId).Value, out Guid idUser))
             {
-                response.Message = "entity not faund";
-                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
-                return Results.Json(response);
+                string login = User.Claims.First(x => x.Type == CustomClaimType.Login).Value;
+
+                var response = await _contactService.UpdateContact(userContactDTO, login);
+
+                return Ok(response);
             }
-            return Results.Json(response);
+            else 
+            {
+                return Ok(new StandartResponse<UserContactDTO>
+                {
+                    Message = "Not valid token",
+                    StatusCode = Domain.InnerResponse.StatusCode.InternalServerError
+                });
+            }
         }
 
         [HttpGet("GetProfiles/{login?}")]
-        public async Task<IActionResult> GetProfiles(string login = "")
+        public async Task<IActionResult> GetProfiles([FromRoute] string login = "")
         {
-            string? id = User.Claims.FirstOrDefault(x => x.Type == CustomClaimType.AccountId).Value;
-            var userId = Guid.Parse(id);
-
-            var response = await _contactService.GetAllProphile(login, userId);
-            if (response.Data == null)
+            if (Guid.TryParse(User.Claims.First(x => x.Type == CustomClaimType.AccountId).Value, out Guid userId))
             {
-                response.Message = "entity not faund";
-                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
+                var response = await _contactService.GetAllProphile(login, userId);
+
                 return Ok(response);
             }
-            return Ok(response);
+            else
+            {
+                return Ok(new StandartResponse<UserContactDTO>
+                {
+                    Message = "Not valid token",
+                    StatusCode = Domain.InnerResponse.StatusCode.InternalServerError
+                });
+            }
         }
     }
 }

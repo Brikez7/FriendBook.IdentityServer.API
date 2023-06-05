@@ -1,11 +1,10 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
-using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace FriendBook.IdentityServer.API.BLL.Services
@@ -21,152 +20,107 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         }
         public async Task<BaseResponse<bool>> ClearContact(Expression<Func<Account, bool>> expression)
         {
-            try
+            var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
+            if (entity == null)
             {
-                var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
-                if (entity == null)
-                {
-                    return new StandartResponse<bool>()
-                    {
-                        Message = "entity not found"
-                    };
-                }
-                var accountIsDelete = _contactRepository.Clear(entity);
-                await _contactRepository.SaveAsync();
                 return new StandartResponse<bool>()
                 {
-                    Data = accountIsDelete,
-                    StatusCode = StatusCode.AccountDelete
+                    Message = "entity not found",
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
-            catch (Exception ex)
+            var accountIsDelete = _contactRepository.Clear(entity);
+            await _contactRepository.SaveAsync();
+            return new StandartResponse<bool>()
             {
-                _logger.LogError(ex, $"[DeleteAccount] : {ex.Message}");
-                return new StandartResponse<bool>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
+                Data = accountIsDelete,
+                StatusCode = StatusCode.AccountDelete
+            };
         }
 
         public async Task<BaseResponse<ProfileDTO[]>> GetAllProphile(string login, Guid id)
         {
-            try
-            {
-                var entities = _contactRepository.GetAll()
-                                                 .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
-                                                 .Select(x => new ProfileDTO(x.Id,x.Login,x.FullName))
-                                                 .ToList();
+            var entities = await _contactRepository.GetAll()
+                                                .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
+                                                .Select(x => new ProfileDTO(x.Id, x.Login, x.FullName))
+                                                .ToListAsync();
 
-                entities.RemoveAll(x => x.Id == id);
-                var array = entities.ToArray();
-                if (array == null || array.Count() == 0)
-                {
-                    return new StandartResponse<ProfileDTO[]>()
-                    {
-                        StatusCode = StatusCode.InternalServerError,
-                        Message = "entity not found"
-                    };
-                }
-                return new StandartResponse<ProfileDTO[]>()
-                {
-                    Data = array,
-                    StatusCode = StatusCode.AccountRead
-                };
-            }
-            catch (Exception ex)
+            entities.RemoveAll(x => x.Id == id);
+            var array = entities.ToArray();
+            if (array == null || array.Length == 0)
             {
-                _logger.LogError(ex, $"[GetAccount] : {ex.Message}");
                 return new StandartResponse<ProfileDTO[]>()
                 {
-                    Message = ex.Message,
                     StatusCode = StatusCode.InternalServerError,
+                    Message = "entity not found"
                 };
             }
+            return new StandartResponse<ProfileDTO[]>()
+            {
+                Data = array,
+                StatusCode = StatusCode.AccountRead
+            };
         }
 
 
         public async Task<BaseResponse<UserContactDTO>> GetContact(Expression<Func<Account, bool>> expression)
         {
-            try
+            var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
+            if (entity == null)
             {
-                var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
-                if (entity == null)
-                {
-                    return new StandartResponse<UserContactDTO>()
-                    {
-                        StatusCode = StatusCode.InternalServerError,
-                        Message = "entity not found"
-                    };
-                }
                 return new StandartResponse<UserContactDTO>()
                 {
-                    Data = new UserContactDTO(entity),
-                    StatusCode = StatusCode.AccountRead
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[GetAccount] : {ex.Message}");
-                return new StandartResponse<UserContactDTO>()
-                {
-                    Message = ex.Message,
                     StatusCode = StatusCode.InternalServerError,
+                    Message = "entity not found"
                 };
             }
+            return new StandartResponse<UserContactDTO>()
+            {
+                Data = new UserContactDTO(entity),
+                StatusCode = StatusCode.AccountRead
+            };
         }
 
-        public async Task<BaseResponse<UserContactDTO>> UpdateContact(Account account)
+        public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login)
         {
-            try
+            if (contactDTO.Login != "" ||contactDTO.Login is null || login is not null) 
             {
-                if (account.Login == "" || account.Login is null) 
-                {
-                    return new StandartResponse<UserContactDTO>()
-                    {
-                        Message = "Login is null",
-                        StatusCode = StatusCode.InternalServerError,
-                    };
-                }
-
-                if (await _contactRepository.GetAll().AnyAsync(x => x.Login == account.Login)) 
-                {
-                    return new StandartResponse<UserContactDTO>()
-                    {
-                        Message = "an account with this username already exists",
-                        StatusCode = StatusCode.InternalServerError,
-                    };
-                }
-
-                var updatedAccount = _contactRepository.Update(account);
-
-                if (updatedAccount is null) 
-                {
-                    return new StandartResponse<UserContactDTO>()
-                    {
-                        Message = "Account not found",
-                        StatusCode = StatusCode.InternalServerError,
-                    };
-                }
-
-                await _contactRepository.SaveAsync();
-
                 return new StandartResponse<UserContactDTO>()
                 {
-                    Data = new UserContactDTO(updatedAccount),
-                    StatusCode = StatusCode.AccountUpdate,
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[UpdateAccount] : {ex.Message}");
-                return new StandartResponse<UserContactDTO>()
-                {
-                    Message = ex.Message,
+                    Message = "Login is null",
                     StatusCode = StatusCode.InternalServerError,
                 };
             }
+
+            if (await _contactRepository.GetAll().AnyAsync(x => x.Login == contactDTO.Login) && login != contactDTO.Login)  
+            {
+                return new StandartResponse<UserContactDTO>()
+                {
+                    Message = "an account with this username already exists",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
+            var account = new Account(contactDTO);
+            var updatedAccount = _contactRepository.Update(account);
+
+            if (updatedAccount is null) 
+            {
+                return new StandartResponse<UserContactDTO>()
+                {
+                    Message = "Account not found",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
+
+            await _contactRepository.SaveAsync();
+
+            return new StandartResponse<UserContactDTO>()
+            {
+                Data = new UserContactDTO(updatedAccount),
+                StatusCode = StatusCode.AccountUpdate,
+            };
         }
     }
+    
 }
+

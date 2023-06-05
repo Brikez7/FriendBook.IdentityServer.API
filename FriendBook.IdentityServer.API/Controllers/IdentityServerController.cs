@@ -1,11 +1,9 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using HCL.IdentityServer.API.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
@@ -25,84 +23,62 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("authenticate/")]
-        public async Task<IResult> Authenticate(AccountDTO accountDTO)
+        public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
         {
-            if (accountDTO == null)
-            {
-                return Results.Json(new StandartResponse<string>()
-                {
-                    Message = "Data null",
-                    StatusCode = Domain.InnerResponse.StatusCode.OKNoContent
-                });
-            }
             var response = await _registrationService.Authenticate(accountDTO);
 
-            return Results.Json(response);
+            return Ok(response);
         }
 
         [HttpPost("registration/")]
-        public async Task<IActionResult> Registration(AccountDTO accountDTO)
+        public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
         {
-            if (accountDTO == null)
-            {
-                return Ok(new StandartResponse<string>()
-                {
-                    Message = "Data null",
-                    StatusCode = Domain.InnerResponse.StatusCode.OKNoContent
-                });
-            }
-
             var response = await _registrationService.Registration(accountDTO);
 
             return Ok(response);
         }
 
         [HttpGet("checkUserExists")]
-        public async Task<IActionResult> CheckUserExists([FromQuery] string Id)
+        public async Task<IActionResult> CheckUserExists([FromQuery] Guid userId)
         {
-            Guid userId;
-            if (Guid.TryParse(Id, out userId))
-            {
-                var response = await _accountService.GetAccount(x => x.Id == userId);
+            var response = await _accountService.GetAccount(x => x.Id == userId);
 
-                return Ok(new StandartResponse<bool>()
-                {
-                    Data = response.Data is not null
-                });
-            }
             return Ok(new StandartResponse<bool>()
             {
-                Message = "Id not Guid",
-                StatusCode = Domain.InnerResponse.StatusCode.AccountNotAuthenticate
+                Data = response.Data is not null
             });
         }
-    
 
-        [HttpGet("checkToken/")]
-        [Authorize]
-        public async Task<IActionResult> CheckToken()
+        [HttpPost("getLoginsUsers")]
+        public async Task<IActionResult> GetLoginsUsers([FromBody] Guid[] usersIds)//Возможности для оптимизации
         {
-            StandartResponse<string> response = new StandartResponse<string>()
-            {
-                StatusCode = Domain.InnerResponse.StatusCode.OK,
-            };
+            var response = await _accountService.GenLogins(usersIds);
+
             return Ok(response);
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpDelete("Delete/{id}")]
-        public async Task<IResult> Delete(Guid id)
+
+        [HttpGet("checkToken/")]
+        [Authorize]
+        public IActionResult CheckToken()
         {
-            var response = await _accountService.DeleteAccount(x => x.Id == id);
-            if (response.Data)
+            if (Guid.TryParse(User.Claims.First(x => x.Type == CustomClaimType.AccountId).Value, out Guid idUser))
             {
-                return Results.Json(response);
+                var response = _
+                StandartResponse<bool> response = new StandartResponse<bool>()
+                {
+                    Data = true,
+                    StatusCode = Domain.InnerResponse.StatusCode.OK
+                };
+                return Ok(response);
             }
-            else
+            else 
             {
-                response.Message = "Error. Entity not delete.";
-                response.StatusCode = Domain.InnerResponse.StatusCode.EntityNotFound;
-                return Results.Json(response);
+                return Ok(new StandartResponse<UserContactDTO>
+                {
+                    Message = "Not valid token",
+                    StatusCode = Domain.InnerResponse.StatusCode.InternalServerError
+                });
             }
         }
     }

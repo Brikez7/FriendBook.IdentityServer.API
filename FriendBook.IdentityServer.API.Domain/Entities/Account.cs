@@ -1,4 +1,4 @@
-﻿using FriendBook.IdentityServer.API.Domain.DTO;
+﻿using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
 
 namespace FriendBook.IdentityServer.API.Domain.Entities
 {
