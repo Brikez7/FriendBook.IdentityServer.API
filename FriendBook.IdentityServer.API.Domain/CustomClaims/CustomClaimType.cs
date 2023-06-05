@@ -1,4 +1,4 @@
-﻿namespace HCL.IdentityServer.API.Domain.Enums
+﻿namespace FriendBook.IdentityServer.API.Domain.CustomClaims
 {
     public static class CustomClaimType
     {

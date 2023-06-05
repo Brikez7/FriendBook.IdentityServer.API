@@ -5,9 +5,9 @@ namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
 {
     public class AccountRepository : IAccountRepository
     {
-        private readonly IdentityServerContext _db;
+        private readonly IdentityContext _db;
 
-        public AccountRepository(IdentityServerContext db)
+        public AccountRepository(IdentityContext db)
         {
             _db = db;
         }

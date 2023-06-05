@@ -1,4 +1,4 @@
-﻿using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
+﻿using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using System.Security.Claims;

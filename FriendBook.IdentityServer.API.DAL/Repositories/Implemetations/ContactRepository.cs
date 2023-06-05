@@ -5,9 +5,9 @@ namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
 {
     public class ContactRepository : IContactRepository
     {
-        private readonly IdentityServerContext _db;
+        private readonly IdentityContext _db;
 
-        public ContactRepository(IdentityServerContext db)
+        public ContactRepository(IdentityContext db)
         {
             _db = db;
         }

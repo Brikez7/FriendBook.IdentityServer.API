@@ -1,7 +1,7 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO;
+using FriendBook.IdentityServer.API.Domain.CustomClaims;
+using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
-using HCL.IdentityServer.API.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -5,7 +5,7 @@ namespace FriendBook.IdentityServer.API.BackgroundHostedService
     public class CheckDBHostedService : BackgroundService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private IdentityServerContext? _appDBContext;
+        private IdentityContext? _appDBContext;
 
         public CheckDBHostedService(IServiceScopeFactory serviceScopeFactory)
         {
@@ -15,7 +15,7 @@ namespace FriendBook.IdentityServer.API.BackgroundHostedService
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            _appDBContext = scope.ServiceProvider.GetRequiredService<IdentityServerContext>();
+            _appDBContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
 
             if (await _appDBContext.Database.EnsureCreatedAsync())
             {
