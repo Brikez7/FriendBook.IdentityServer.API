@@ -1,4 +1,4 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.DTO.AcouuntsDTO
+﻿namespace FriendBook.IdentityServer.API.Domain.DTO.AcountsDTO
 {
     public class ProfileDTO
     {

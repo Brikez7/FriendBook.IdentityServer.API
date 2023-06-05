@@ -23,25 +23,11 @@ namespace FriendBook.IdentityServer.API.Controllers
             _registrationService = registrationService;
             _db = appDB;
         }
-
-        [HttpGet("Test/CreateDatabase")]
-        public async Task<IResult> CreateDatabase()
+        [HttpGet("TestClaims")]
+        public IResult GetClaims()
         {
-            using (var db = _db)
-            {
-                db.Database.EnsureCreated();
-            }
-            return Results.Json(new { unswer = "ok" });
-        }
-        [HttpGet("Test/UpdateDatabase")]
-        public async Task<IResult> UpdateDatabase()
-        {
-            using (var db = _db)
-            {
-                db.Database.EnsureDeleted();
-                db.Database.EnsureCreated();
-            }
-            return Results.Json(new { unswer = "ok" });
+            var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
+            return Results.Json(claims);
         }
     }
 }
