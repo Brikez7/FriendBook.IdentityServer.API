@@ -64,7 +64,6 @@ namespace FriendBook.IdentityServer.API.Controllers
         {
             if (Guid.TryParse(User.Claims.First(x => x.Type == CustomClaimType.AccountId).Value, out Guid idUser))
             {
-                var response = _
                 StandartResponse<bool> response = new StandartResponse<bool>()
                 {
                     Data = true,
