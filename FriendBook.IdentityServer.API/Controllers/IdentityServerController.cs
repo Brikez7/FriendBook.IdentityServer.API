@@ -22,7 +22,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             _accountService = accountService;
         }
 
-        [HttpPost("authenticate/")]
+        [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
         {
             var response = await _registrationService.Authenticate(accountDTO);
@@ -30,7 +30,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("registration/")]
+        [HttpPost("registration")]
         public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
         {
             var response = await _registrationService.Registration(accountDTO);
@@ -58,7 +58,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
 
-        [HttpGet("checkToken/")]
+        [HttpGet("checkToken")]
         [Authorize]
         public IActionResult CheckToken()
         {

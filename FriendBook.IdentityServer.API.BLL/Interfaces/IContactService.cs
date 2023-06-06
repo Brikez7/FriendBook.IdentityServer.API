@@ -9,7 +9,7 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
     {
         public Task<BaseResponse<UserContactDTO>> GetContact(Expression<Func<Account, bool>> expression);
         public Task<BaseResponse<bool>> ClearContact(Expression<Func<Account, bool>> expression);
-        public Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO account, string login);
+        public Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO account, string login,Guid idUser);
         public Task<BaseResponse<ProfileDTO[]>> GetAllProphile(string login, Guid id);
 
     }

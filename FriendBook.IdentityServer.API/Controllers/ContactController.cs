@@ -54,7 +54,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             {
                 string login = User.Claims.First(x => x.Type == CustomClaimType.Login).Value;
 
-                var response = await _contactService.UpdateContact(userContactDTO, login);
+                var response = await _contactService.UpdateContact(userContactDTO, login,idUser);
 
                 return Ok(response);
             }

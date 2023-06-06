@@ -4,7 +4,6 @@ using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -29,16 +28,18 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         }
         public async Task<BaseResponse<string>> Registration(AccountDTO accountDTO)
         {
-            if (!await _accountService.GetAllAccounts().Data.AnyAsync(x => x.Login == accountDTO.Login))
+            var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
+            if (account is null)
             {
                 CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
 
                 newAccount = (await _accountService.CreateAccount(newAccount)).Data;
+                var authenticatedAccountDTO = (await Authenticate(accountDTO)).Data;
                 return new StandartResponse<string>()
                 {
-                    Data = (await Authenticate(accountDTO)).Data,
+                    Data = authenticatedAccountDTO,
                     StatusCode = StatusCode.AccountCreate
                 };
             }
@@ -51,9 +52,9 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<string>> Authenticate(AccountDTO accountDTO)
         {
-            var account = await _accountService.GetAccount(x => x.Login == accountDTO.Login);
-            if (account.Data == null ||
-                !VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Data.Password), Convert.FromBase64String(account.Data.Salt)))
+            var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
+            if (account == null ||
+                !VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
             {
                 return new StandartResponse<string>()
                 {
@@ -61,7 +62,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                     StatusCode = StatusCode.ErrorAuthenticate
                 };
             }
-            string token = GetToken(account.Data);
+            string token = GetToken(account);
             return new StandartResponse<string>()
             {
                 Data = token,

@@ -42,7 +42,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         {
             var entities = await _contactRepository.GetAll()
                                                 .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
-                                                .Select(x => new ProfileDTO(x.Id, x.Login, x.FullName))
+                                                .Select(x => new ProfileDTO((Guid)x.Id, x.Login, x.FullName))
                                                 .ToListAsync();
 
             entities.RemoveAll(x => x.Id == id);
@@ -81,9 +81,9 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login)
+        public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login, Guid idUser)
         {
-            if (contactDTO.Login != "" ||contactDTO.Login is null || login is not null) 
+            if (contactDTO.Login == "") 
             {
                 return new StandartResponse<UserContactDTO>()
                 {
@@ -92,7 +92,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 };
             }
 
-            if (await _contactRepository.GetAll().AnyAsync(x => x.Login == contactDTO.Login) && login != contactDTO.Login)  
+            var userId = await _contactRepository.GetAll().Select(x => new { x.Id,x.Login}).SingleOrDefaultAsync(x => x.Login == contactDTO.Login && idUser == x.Id);
+            if (userId is null && login != contactDTO.Login)  
             {
                 return new StandartResponse<UserContactDTO>()
                 {
@@ -100,7 +101,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                     StatusCode = StatusCode.InternalServerError,
                 };
             }
-            var account = new Account(contactDTO);
+            var account = new Account(contactDTO, (Guid)userId.Id);
             var updatedAccount = _contactRepository.Update(account);
 
             if (updatedAccount is null) 
