@@ -100,7 +100,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
             
         }
-        public async Task<BaseResponse<Tuple<Guid, string>[]>> GenLogins(Guid[] usersIds)
+        public async Task<BaseResponse<Tuple<Guid, string>[]>> GetLogins(Guid[] usersIds)
         {
             var loginWithId = await _accountRepository.GetAll()
                                                       .Select(x => new { x.Id, x.Login })

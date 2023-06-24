@@ -12,7 +12,7 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
         public Task<BaseResponse<Account>> CreateAccount(Account account);
         public Task<BaseResponse<Account>> UpdateAccount(AccountDTO account);
         public Task<BaseResponse<bool>> DeleteAccount(Expression<Func<Account, bool>> expression);
-        public Task<BaseResponse<Tuple<Guid, string>[]>> GenLogins(Guid[] usersIds);
+        public Task<BaseResponse<Tuple<Guid, string>[]>> GetLogins(Guid[] usersIds);
 
     }
 }

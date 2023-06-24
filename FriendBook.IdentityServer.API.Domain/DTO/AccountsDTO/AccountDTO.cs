@@ -1,4 +1,5 @@
 ﻿using FriendBook.IdentityServer.API.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO
 {

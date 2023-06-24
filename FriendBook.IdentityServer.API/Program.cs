@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using FriendBook.IdentityServer.API.DAL;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,13 @@ namespace FriendBook.IdentityServer.API
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
+
             builder.Services.AddSingleton(builder.Configuration);
+
             builder.AddRepositores();
             builder.AddServices();
             builder.AddJWT();
+            builder.AddValidators();
 
             builder.AddHostedServices();
 

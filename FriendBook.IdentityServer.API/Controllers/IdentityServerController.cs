@@ -1,5 +1,5 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.CustomClaims;
+using FriendBook.IdentityServer.API.Domain.UserToken;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using Microsoft.AspNetCore.Authorization;
@@ -14,31 +14,42 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IAccountService _accountService;
+        private readonly IValidationService<AccountDTO> _accountValidationService;
+        public Lazy<UserTokenAuth> UserToken { get; set; }
 
-        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService)
+        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService, 
+            IValidationService<AccountDTO> accountValidationService)
         {
             _logger = logger;
             _registrationService = registrationService;
             _accountService = accountService;
+            _accountValidationService = accountValidationService;
+            UserToken = new Lazy<UserTokenAuth>(() => UserTokenAuth.CreateUserToken(User.Claims));
         }
 
-        [HttpPost("authenticate")]
+        [HttpPost("Authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
         {
-            var response = await _registrationService.Authenticate(accountDTO);
+            var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
+            if (responseValidation is not null)
+                return Ok(responseValidation);
 
+            var response = await _registrationService.Authenticate(accountDTO);
             return Ok(response);
         }
 
-        [HttpPost("registration")]
+        [HttpPost("Registration")]
         public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
         {
-            var response = await _registrationService.Registration(accountDTO);
+            var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
+            if (responseValidation is not null)
+                return Ok(responseValidation);
 
+            var response = await _registrationService.Registration(accountDTO);
             return Ok(response);
         }
 
-        [HttpGet("checkUserExists")]
+        [HttpGet("CheckUserExists")]
         public async Task<IActionResult> CheckUserExists([FromQuery] Guid userId)
         {
             var response = await _accountService.GetAccount(x => x.Id == userId);
@@ -49,36 +60,23 @@ namespace FriendBook.IdentityServer.API.Controllers
             });
         }
 
-        [HttpPost("getLoginsUsers")]
+        [HttpPost("GetLoginsUsers")]
         public async Task<IActionResult> GetLoginsUsers([FromBody] Guid[] usersIds)//Возможности для оптимизации
         {
-            var response = await _accountService.GenLogins(usersIds);
-
+            var response = await _accountService.GetLogins(usersIds);
             return Ok(response);
         }
 
 
-        [HttpGet("checkToken")]
+        [HttpGet("CheckToken")]
         [Authorize]
         public IActionResult CheckToken()
         {
-            if (Guid.TryParse(User.Claims.First(x => x.Type == CustomClaimType.AccountId).Value, out Guid idUser))
+            return Ok(new StandartResponse<bool>
             {
-                StandartResponse<bool> response = new StandartResponse<bool>()
-                {
-                    Data = true,
-                    StatusCode = Domain.InnerResponse.StatusCode.OK
-                };
-                return Ok(response);
-            }
-            else 
-            {
-                return Ok(new StandartResponse<UserContactDTO>
-                {
-                    Message = "Not valid token",
-                    StatusCode = Domain.InnerResponse.StatusCode.InternalServerError
-                });
-            }
+                Data = true,
+                StatusCode = Domain.InnerResponse.StatusCode.OK
+            });
         }
     }
 }

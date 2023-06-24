@@ -38,24 +38,24 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<ProfileDTO[]>> GetAllProphile(string login, Guid id)
+        public async Task<BaseResponse<ResponseProfile[]>> GetAllProphile(string login, Guid id)
         {
             var entities = await _contactRepository.GetAll()
                                                 .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
-                                                .Select(x => new ProfileDTO((Guid)x.Id, x.Login, x.FullName))
+                                                .Select(x => new ResponseProfile((Guid)x.Id, x.Login, x.FullName))
                                                 .ToListAsync();
 
             entities.RemoveAll(x => x.Id == id);
             var array = entities.ToArray();
             if (array == null || array.Length == 0)
             {
-                return new StandartResponse<ProfileDTO[]>()
+                return new StandartResponse<ResponseProfile[]>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Message = "entity not found"
                 };
             }
-            return new StandartResponse<ProfileDTO[]>()
+            return new StandartResponse<ResponseProfile[]>()
             {
                 Data = array,
                 StatusCode = StatusCode.AccountRead
@@ -92,7 +92,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 };
             }
 
-            var userId = await _contactRepository.GetAll().Select(x => new { x.Id,x.Login}).SingleOrDefaultAsync(x => x.Login == contactDTO.Login && idUser == x.Id);
+            var userId = await _contactRepository.GetAll()
+                                                 .Select(x => new { x.Id,x.Login})
+                                                 .SingleOrDefaultAsync(x => x.Login == contactDTO.Login && idUser == x.Id);
+
             if (userId is null && login != contactDTO.Login)  
             {
                 return new StandartResponse<UserContactDTO>()
