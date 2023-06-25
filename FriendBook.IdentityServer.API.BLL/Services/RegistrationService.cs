@@ -1,114 +1,88 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
+using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace FriendBook.IdentityServer.API.BLL.Services
 {
     public class RegistrationService : IRegistrationService
     {
         protected readonly ILogger<RegistrationService> _logger;
-        private readonly JWTSettings _options;
         private readonly IAccountService _accountService;
-
-        public RegistrationService(ILogger<RegistrationService> logger, IOptions<JWTSettings> options, IAccountService accountService)
+        private readonly ITokenService _tokenService;
+        private readonly IPasswordService _passwordService;
+        private readonly JWTSettings _jwtSettings;
+        public RegistrationService(ILogger<RegistrationService> logger, IAccountService accountService, ITokenService tokenService, IPasswordService passwordService, IOptions<JWTSettings> jwtOptions)
         {
             _logger = logger;
-            _options = options.Value;
             _accountService = accountService;
+            _tokenService = tokenService;
+            _passwordService = passwordService;
+            _jwtSettings = jwtOptions.Value;
         }
-        public async Task<BaseResponse<string>> Registration(AccountDTO accountDTO)
+        public async Task<BaseResponse<AuthenticatedTokenResponse>> Registration(AccountDTO accountDTO)
         {
-            var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
-            if (account is null)
+            var responseAccount = await _accountService.GetAccount(x => x.Login == accountDTO.Login);
+            if (responseAccount.Message is not null)
             {
-                CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                _passwordService.CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
 
-                newAccount = (await _accountService.CreateAccount(newAccount)).Data;
-                var authenticatedAccountDTO = (await Authenticate(accountDTO)).Data;
-                return new StandartResponse<string>()
+                var responseNewAccount = await _accountService.CreateAccount(newAccount);
+                if (responseNewAccount.Message is not null)
+                    return new StandartResponse<AuthenticatedTokenResponse> { Message = responseNewAccount.Message, StatusCode = responseNewAccount.StatusCode };
+
+                newAccount = responseNewAccount.Data;
+                var accsessToken = (await Authenticate(accountDTO)).Data;
+                return new StandartResponse<AuthenticatedTokenResponse>()
                 {
-                    Data = authenticatedAccountDTO,
+                    Data = accsessToken,
                     StatusCode = StatusCode.AccountCreate
                 };
             }
-            return new StandartResponse<string>()
+            return new StandartResponse<AuthenticatedTokenResponse>()
             {
-                Message = "Account with that login alredy exist",
-                StatusCode = StatusCode.AccountWithLoginExists
+                Message = responseAccount.Message,
+                StatusCode = responseAccount.StatusCode
             };
         }
 
-        public async Task<BaseResponse<string>> Authenticate(AccountDTO accountDTO)
+        public async Task<BaseResponse<AuthenticatedTokenResponse>> Authenticate(AccountDTO accountDTO)
         {
             var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
             if (account == null ||
-                !VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
+                !_passwordService.VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
             {
-                return new StandartResponse<string>()
+                return new StandartResponse<AuthenticatedTokenResponse>()
                 {
                     Message = "account not found",
                     StatusCode = StatusCode.ErrorAuthenticate
                 };
             }
-            string token = GetToken(account);
-            return new StandartResponse<string>()
+
+            return new StandartResponse<AuthenticatedTokenResponse>()
             {
-                Data = token,
+                Data = _tokenService.GenerateAuthenticatedToken(account).Data,
                 StatusCode = StatusCode.AccountAuthenticate
             };
         }
 
-        public string GetToken(Account account)
+        public Task<BaseResponse<AuthenticatedTokenResponse>> AuthenticateByRefreshToken(UserAccsessToken tokenAuth, string refreshToken)
         {
-            List<Claim> claims = new List<Claim>
+            var claimsRT = _tokenService.GetPrincipalFromExpiredToken(refreshToken, _jwtSettings.RefreshTokenSecretKey);
+            var secretNumber = claimsRT?.Data?.Claims.FirstOrDefault(x => x.Type == CustomClaimType.SecretNumber);
+            if (secretNumber != null)
             {
-                new Claim(CustomClaimType.Login,account.Login),
-                new Claim(CustomClaimType.AccountId, account.Id.ToString())
-            };
-
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-
-            var jwt = new JwtSecurityToken(
-                    issuer: _options.Issuer,
-                    audience: _options.Audience,
-                    claims: claims,
-                    expires: DateTime.Now.Add(TimeSpan.FromMinutes(JWTSettings.StartJWTTokenLifeTime)),
-                    notBefore: DateTime.Now,
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
-        }
-
-        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                // Проверка в Redis
             }
-        }
-
-        private static bool VerifyPasswordHash(string Password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(Password));
-
-                return computedHash.SequenceEqual(passwordHash);
-            }
+            return  Task.FromResult<BaseResponse<AuthenticatedTokenResponse>>(new StandartResponse<AuthenticatedTokenResponse> { Message = "Refresh token or access token is not valid" });
         }
     }
 }

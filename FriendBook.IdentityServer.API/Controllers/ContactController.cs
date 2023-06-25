@@ -13,14 +13,14 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly ILogger<ContactController> _logger;
         private readonly IContactService _contactService;
         private readonly IValidationService<UserContactDTO> _contactValidationService;
-        public Lazy<UserTokenAuth> UserToken { get; set; }
-
-        public ContactController(ILogger<ContactController> logger, IContactService contactService, IValidationService<UserContactDTO> validationService)
+        public Lazy<UserAccsessToken> UserToken { get; set; }
+        public ContactController(ILogger<ContactController> logger, IContactService contactService, IValidationService<UserContactDTO> validationService,
+            IUserAccessTokenService userAccessTokenService)
         {
             _logger = logger;
             _contactService = contactService;
             _contactValidationService = validationService;
-            UserToken = new Lazy<UserTokenAuth>(() => UserTokenAuth.CreateUserToken(User.Claims));
+            UserToken = userAccessTokenService.CreateUser(User.Claims);
         }
 
         [HttpGet("getMyContact")]

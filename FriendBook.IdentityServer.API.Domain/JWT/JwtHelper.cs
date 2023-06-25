@@ -17,14 +17,14 @@ namespace FriendBook.IdentityServer.API.Domain.JWT
                 HttpOnly = true,
             };
             responseCookies.Append(CookieNames.JWTToken, jwtComponent.Item1, cookieOptions);
-            //responseCookies.Append(CookieNames.RefreshToken, jwtComponent.Item2, cookieOptions);
+            responseCookies.Append(CookieNames.RefreshToken, jwtComponent.Item2, cookieOptions);
             responseCookies.Append(CookieNames.AccountId, jwtComponent.Item3.ToString(), cookieOptions);
         }
 
         public static void RemoveJwtCookie(this IResponseCookies responseCookies)
         {
             responseCookies.Delete(CookieNames.JWTToken);
-            //responseCookies.Delete(CookieNames.RefreshToken);
+            responseCookies.Delete(CookieNames.RefreshToken);
             responseCookies.Delete(CookieNames.AccountId);
         }
     }

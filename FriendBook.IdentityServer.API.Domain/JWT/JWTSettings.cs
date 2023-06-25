@@ -2,9 +2,11 @@
 {
     public class JWTSettings
     {
-        public const double StartJWTTokenLifeTime = 60;
-        public string SecretKey { get; set; } = null!;
+        public string AccessTokenSecretKey { get; set; } = null!;
+        public string RefreshTokenSecretKey { get; set; } = null!;
         public string Issuer { get; set; } = null!;
         public string Audience { get; set; } = null!;
+        public double AccessTokenExpirationMinutes { get; set; } 
+        public double RefreshTokenExpirationMinutes { get; set; } 
     }
 }

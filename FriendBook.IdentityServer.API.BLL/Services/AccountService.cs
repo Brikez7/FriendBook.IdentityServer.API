@@ -56,7 +56,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             {
                 return new StandartResponse<Account>()
                 {
-                    Message = "entity not found",
+                    Message = "account not found",
                     StatusCode = StatusCode.InternalServerError
                 };
             }
@@ -107,12 +107,22 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                                                       .ToListAsync();
 
             var SearchedLogins = loginWithId.Where(x => usersIds.Any(id => id == x.Id))
-                                           .Select(x => new Tuple<Guid, string>((Guid)x.Id, x.Login))
+                                           .Select(x => new Tuple<Guid, string>((Guid)x.Id!, x.Login))
                                            .ToArray();
 
             return new StandartResponse<Tuple<Guid, string>[]>
             {
                 Data = SearchedLogins
+            };
+        }
+
+        public async Task<BaseResponse<bool>> AccountExists(Expression<Func<Account, bool>> expression)
+        {
+            var accountExists = await _accountRepository.GetAll().AnyAsync(expression);
+            return new StandartResponse<bool>()
+            {
+                Data = accountExists,
+                StatusCode = StatusCode.AccountCreate
             };
         }
     }

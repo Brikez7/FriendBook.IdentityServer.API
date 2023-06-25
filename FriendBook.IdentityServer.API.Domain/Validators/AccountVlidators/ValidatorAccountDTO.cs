@@ -9,7 +9,7 @@ namespace FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators
         {
             RuleFor(dto => dto.Login)
                 .NotEmpty().WithMessage("Login is required")
-                .Matches(@"^[a-zA-Z0-9]+$").WithMessage("Login must contain only letters and numbers")
+                .Matches(@"^[a-zA-ZА-Яа-я0-9]+$").WithMessage("Login must contain only letters and numbers")
                 .Length(2, 50).WithMessage("Login must not exceed 50 characters and least 2 characters.");
 
             RuleFor(dto => dto.Password)

@@ -15,16 +15,18 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly IRegistrationService _registrationService;
         private readonly IAccountService _accountService;
         private readonly IValidationService<AccountDTO> _accountValidationService;
-        public Lazy<UserTokenAuth> UserToken { get; set; }
+        private readonly IUserAccessTokenService _userAccessTokenService;
+        public Lazy<UserAccsessToken> UserToken { get; set; }
 
         public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService, 
-            IValidationService<AccountDTO> accountValidationService)
+            IValidationService<AccountDTO> accountValidationService, IUserAccessTokenService userAccessTokenService)
         {
             _logger = logger;
             _registrationService = registrationService;
             _accountService = accountService;
             _accountValidationService = accountValidationService;
-            UserToken = new Lazy<UserTokenAuth>(() => UserTokenAuth.CreateUserToken(User.Claims));
+            _userAccessTokenService = userAccessTokenService;
+            UserToken = userAccessTokenService.CreateUser(User.Claims);
         }
 
         [HttpPost("Authenticate")]
@@ -36,6 +38,17 @@ namespace FriendBook.IdentityServer.API.Controllers
 
             var response = await _registrationService.Authenticate(accountDTO);
             return Ok(response);
+        }
+
+        [HttpPost("AuthenticateByRefreshToken")]
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] string refreshToken = null!)
+        {
+            var responseUserToken = _userAccessTokenService.CreateUserTokenTryEmpty(User.Claims);
+            if (responseUserToken.Data is null)
+                return Ok(responseUserToken);
+
+            var responseAuthenicated = await _registrationService.AuthenticateByRefreshToken(responseUserToken.Data,refreshToken);
+            return Ok(responseAuthenicated);
         }
 
         [HttpPost("Registration")]

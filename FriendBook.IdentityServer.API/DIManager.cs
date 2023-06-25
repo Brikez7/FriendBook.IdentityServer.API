@@ -4,7 +4,6 @@ using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.BLL.Services;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
-using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators;
@@ -26,27 +25,34 @@ namespace FriendBook.IdentityServer.API
         {
             webApplicationBuilder.Services.AddScoped<IValidator<AccountDTO>, ValidatorAccountDTO>();
             webApplicationBuilder.Services.AddScoped<IValidator<UserContactDTO>, ValidatorUserContactDTO>();
+
+            webApplicationBuilder.Services.AddScoped<IValidationService<AccountDTO>, ValidationService<AccountDTO>>();
+            webApplicationBuilder.Services.AddScoped<IValidationService<UserContactDTO>, ValidationService<UserContactDTO>>();
         }
         public static void AddServices(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IAccountService, AccountService>();
             webApplicationBuilder.Services.AddScoped<IRegistrationService, RegistrationService>();
             webApplicationBuilder.Services.AddScoped<IContactService, ContactService>();
-
-            webApplicationBuilder.Services.AddScoped<IValidationService<AccountDTO>, ValidationService<AccountDTO>>();
-            webApplicationBuilder.Services.AddScoped<IValidationService<UserContactDTO>, ValidationService<UserContactDTO>>();
+            webApplicationBuilder.Services.AddScoped<ITokenService, TokenService>();
+            webApplicationBuilder.Services.AddScoped<IPasswordService, PasswordService>();
+            webApplicationBuilder.Services.AddScoped<IUserAccessTokenService, UserAccessTokenService>();
+        }
+        public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)
+        {
+            webApplicationBuilder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = webApplicationBuilder.Configuration.GetSection("RedisOptions:Host").Value;
+            });
         }
         public static void AddJWT(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.Configure<JWTSettings>(webApplicationBuilder.Configuration.GetSection("JWTSettings"));
 
-            var secretKey = webApplicationBuilder.Configuration.GetSection("JWTSettings:SecretKey").Value;
-            var issuer = webApplicationBuilder.Configuration.GetSection("JWTSettings:Issuer").Value;
-            var audience = webApplicationBuilder.Configuration.GetSection("JWTSettings:Audience").Value;
+            var jwtSettings = webApplicationBuilder.Configuration.GetSection("JWTSettings").Get<JWTSettings>() 
+                ?? throw new ArgumentNullException("JWTSettings is null");
 
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
-
-            Console.WriteLine(secretKey!, issuer, audience, signingKey);
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.AccessTokenSecretKey!));
 
             webApplicationBuilder.Services.AddAuthentication(options =>
             {
@@ -60,9 +66,9 @@ namespace FriendBook.IdentityServer.API
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = issuer,
+                    ValidIssuer = jwtSettings.Issuer,
                     ValidateAudience = true,
-                    ValidAudience = audience,
+                    ValidAudience = jwtSettings.Audience,
                     ValidateLifetime = true,
                     IssuerSigningKey = signingKey,
                     ValidateIssuerSigningKey = true,
