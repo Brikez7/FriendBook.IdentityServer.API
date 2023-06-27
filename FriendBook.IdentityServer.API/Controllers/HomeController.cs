@@ -9,11 +9,11 @@ namespace FriendBook.IdentityServer.API.Controllers
     public class HomeController : ControllerBase
     {
         private readonly ILogger<HomeController> _logger;
-        public Lazy<UserAccsessToken> UserToken { get; set; } 
-        public HomeController(ILogger<HomeController> logger)
+        private Lazy<UserAccsessToken> UserToken { get; set; } 
+        public HomeController(ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
-            UserToken = new Lazy<UserAccsessToken>(() => UserAccsessToken.CreateUserToken(User.Claims));
+            UserToken = new Lazy<UserAccsessToken>(() => UserAccsessToken.CreateUserToken(httpContextAccessor.HttpContext.User.Claims));
         }
         [HttpGet("GetClaims")]
         [Authorize]

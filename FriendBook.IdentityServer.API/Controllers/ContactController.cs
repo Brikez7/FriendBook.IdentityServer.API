@@ -15,12 +15,12 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly IValidationService<UserContactDTO> _contactValidationService;
         public Lazy<UserAccsessToken> UserToken { get; set; }
         public ContactController(ILogger<ContactController> logger, IContactService contactService, IValidationService<UserContactDTO> validationService,
-            IUserAccessTokenService userAccessTokenService)
+            IUserAccessTokenService userAccessTokenService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _contactService = contactService;
             _contactValidationService = validationService;
-            UserToken = userAccessTokenService.CreateUser(User.Claims);
+            UserToken = userAccessTokenService.CreateUser(httpContextAccessor.HttpContext.User.Claims);
         }
 
         [HttpGet("getMyContact")]
@@ -47,7 +47,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             var response = await _contactService.UpdateContact(userContactDTO, UserToken.Value.Login,UserToken.Value.Id);
             return Ok(response);
         }
-
+        // Add in AppUI after this method need remove
         [HttpGet("GetProfiles/{login?}")]
         public async Task<IActionResult> GetProfiles([FromRoute] string login = "")
         {

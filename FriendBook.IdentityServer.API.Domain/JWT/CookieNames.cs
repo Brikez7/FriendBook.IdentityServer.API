@@ -1,4 +1,4 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.JWT
+﻿namespace FriendBook.IdentityServer.API.Domain.Settings.JWT
 {
     public static class CookieNames
     {

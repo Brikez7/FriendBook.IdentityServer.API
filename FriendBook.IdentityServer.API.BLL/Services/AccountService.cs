@@ -1,5 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;

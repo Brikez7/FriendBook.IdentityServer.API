@@ -13,20 +13,15 @@ namespace FriendBook.IdentityServer.API.Controllers
     {
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
-        private readonly IAccountService _accountService;
         private readonly IValidationService<AccountDTO> _accountValidationService;
         private readonly IUserAccessTokenService _userAccessTokenService;
-        public Lazy<UserAccsessToken> UserToken { get; set; }
-
-        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService, 
+        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService,
             IValidationService<AccountDTO> accountValidationService, IUserAccessTokenService userAccessTokenService)
         {
             _logger = logger;
             _registrationService = registrationService;
-            _accountService = accountService;
             _accountValidationService = accountValidationService;
             _userAccessTokenService = userAccessTokenService;
-            UserToken = userAccessTokenService.CreateUser(User.Claims);
         }
 
         [HttpPost("Authenticate")]
@@ -41,7 +36,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("AuthenticateByRefreshToken")]
-        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] string refreshToken = null!)
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromQuery] string refreshToken = null!)
         {
             var responseUserToken = _userAccessTokenService.CreateUserTokenTryEmpty(User.Claims);
             if (responseUserToken.Data is null)
@@ -62,7 +57,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("CheckUserExists")]
+/*        [HttpGet("CheckUserExists")]
         public async Task<IActionResult> CheckUserExists([FromQuery] Guid userId)
         {
             var response = await _accountService.GetAccount(x => x.Id == userId);
@@ -78,7 +73,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         {
             var response = await _accountService.GetLogins(usersIds);
             return Ok(response);
-        }
+        }*/
 
 
         [HttpGet("CheckToken")]
@@ -88,7 +83,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(new StandartResponse<bool>
             {
                 Data = true,
-                StatusCode = Domain.InnerResponse.StatusCode.OK
+                StatusCode = Domain.StatusCode.OK
             });
         }
     }

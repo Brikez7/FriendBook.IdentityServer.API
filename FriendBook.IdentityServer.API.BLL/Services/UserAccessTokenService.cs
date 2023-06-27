@@ -1,4 +1,5 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.UserToken;
@@ -8,6 +9,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 {
     public class UserAccessTokenService : IUserAccessTokenService
     {
+        public UserAccessTokenService()
+        {
+        }
+
         public Lazy<UserAccsessToken> CreateUser(IEnumerable<Claim> claims)
         {
             return new Lazy<UserAccsessToken>(() => CreateUserToken(claims));

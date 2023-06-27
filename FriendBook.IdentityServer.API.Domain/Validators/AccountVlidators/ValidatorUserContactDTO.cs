@@ -24,7 +24,7 @@ namespace FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators
                 .When(dto => !string.IsNullOrEmpty(dto.FullName));
 
             RuleFor(dto => dto.Email)
-                .Length(50).WithMessage("Email must not exceed 100 characters.")
+                .Length(0,50).WithMessage("Email must not exceed 50 characters.")
                 .EmailAddress().WithMessage("Email is not in a valid format.")
                 .When(dto => !string.IsNullOrEmpty(dto.Email));
 

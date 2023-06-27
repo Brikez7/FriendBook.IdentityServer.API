@@ -1,5 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
@@ -41,11 +42,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         public async Task<BaseResponse<ResponseProfile[]>> GetAllProphile(string login, Guid id)
         {
             var entities = await _contactRepository.GetAll()
-                                                .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
-                                                .Select(x => new ResponseProfile((Guid)x.Id, x.Login, x.FullName))
+                                                .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%") && x.Id != id)
+                                                .Select(x => new ResponseProfile((Guid)x.Id!, x.Login, x.FullName))
                                                 .ToListAsync();
 
-            entities.RemoveAll(x => x.Id == id);
             var array = entities.ToArray();
             if (array == null || array.Length == 0)
             {

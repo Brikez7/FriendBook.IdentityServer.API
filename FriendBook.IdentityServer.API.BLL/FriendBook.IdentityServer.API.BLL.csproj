@@ -7,13 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.54.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.56.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="JWT" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FriendBook.IdentityServer.API.DAL\FriendBook.IdentityServer.API.DAL.csproj" />
     <ProjectReference Include="..\FriendBook.IdentityServer.API.Domain\FriendBook.IdentityServer.API.Domain.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Protobuf Include="Protos\*.proto" GrpcServices="Server" />
+  </ItemGroup>
+  
 </Project>

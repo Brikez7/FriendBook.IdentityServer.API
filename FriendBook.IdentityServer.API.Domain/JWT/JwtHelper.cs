@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FriendBook.IdentityServer.API.Domain.JWT
+namespace FriendBook.IdentityServer.API.Domain.Settings.JWT
 {
     public static class JwtHelper
     {
@@ -9,7 +9,7 @@ namespace FriendBook.IdentityServer.API.Domain.JWT
         {
             return exp != null ? exp > DateTime.UtcNow : false;
         }
-        
+
         public static void SetJwtCookie(this IResponseCookies responseCookies, (string, string, Guid) jwtComponent)
         {
             var cookieOptions = new CookieOptions

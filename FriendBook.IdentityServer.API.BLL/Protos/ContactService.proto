@@ -1,0 +1,26 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FriendBook.IdentityServer.API.BLL.gRPCClients.ContactService";
+
+package ContactService;
+
+service PublicContact
+{
+  rpc GetProfiles (RequestUserLogin) returns (ResponseProfiles);
+}
+
+message RequestUserLogin
+{
+  string Login = 1;
+}
+
+message Profile {
+  string Login = 1;
+  string FullName = 2;
+  string Id = 3;
+}
+
+message ResponseProfiles
+{
+  repeated Profile profiles = 1;
+}

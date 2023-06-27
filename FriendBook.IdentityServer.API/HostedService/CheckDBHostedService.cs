@@ -1,6 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.DAL;
 
-namespace FriendBook.IdentityServer.API.BackgroundHostedService
+namespace FriendBook.IdentityServer.API.HostedService
 {
     public class CheckDBHostedService : BackgroundService
     {

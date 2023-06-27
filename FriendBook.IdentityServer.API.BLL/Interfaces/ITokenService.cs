@@ -7,14 +7,14 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
 {
     public interface ITokenService
     {
-        public BaseResponse<AuthenticatedTokenResponse> GenerateAuthenticatedToken(Account account)
+        public BaseResponse<ResponseAuthenticated> GenerateAuthenticatedToken(Account account)
         {
             var accessToken = GenerateAccessToken(account);
             var refreshToken = GenerateRefreshToken(account);
 
-            return new StandartResponse<AuthenticatedTokenResponse>
+            return new StandartResponse<ResponseAuthenticated>
             {
-                Data = new AuthenticatedTokenResponse(accessToken, refreshToken)
+                Data = new ResponseAuthenticated(accessToken, refreshToken)
             };
         }
         protected string GenerateAccessToken(Account account);

@@ -1,10 +1,11 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
-using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Settings;
 using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,10 +27,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             _passwordService = passwordService;
             _jwtSettings = jwtOptions.Value;
         }
-        public async Task<BaseResponse<AuthenticatedTokenResponse>> Registration(AccountDTO accountDTO)
+        public async Task<BaseResponse<ResponseAuthenticated>> Registration(AccountDTO accountDTO)
         {
             var responseAccount = await _accountService.GetAccount(x => x.Login == accountDTO.Login);
-            if (responseAccount.Message is not null)
+            if (responseAccount.Data is null)
             {
                 _passwordService.CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -37,44 +38,44 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
                 var responseNewAccount = await _accountService.CreateAccount(newAccount);
                 if (responseNewAccount.Message is not null)
-                    return new StandartResponse<AuthenticatedTokenResponse> { Message = responseNewAccount.Message, StatusCode = responseNewAccount.StatusCode };
+                    return new StandartResponse<ResponseAuthenticated> { Message = responseNewAccount.Message, StatusCode = responseNewAccount.StatusCode };
 
                 newAccount = responseNewAccount.Data;
                 var accsessToken = (await Authenticate(accountDTO)).Data;
-                return new StandartResponse<AuthenticatedTokenResponse>()
+                return new StandartResponse<ResponseAuthenticated>()
                 {
                     Data = accsessToken,
                     StatusCode = StatusCode.AccountCreate
                 };
             }
-            return new StandartResponse<AuthenticatedTokenResponse>()
+            return new StandartResponse<ResponseAuthenticated>()
             {
-                Message = responseAccount.Message,
+                Message = "Account with login already exists",
                 StatusCode = responseAccount.StatusCode
             };
         }
 
-        public async Task<BaseResponse<AuthenticatedTokenResponse>> Authenticate(AccountDTO accountDTO)
+        public async Task<BaseResponse<ResponseAuthenticated>> Authenticate(AccountDTO accountDTO)
         {
             var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
             if (account == null ||
                 !_passwordService.VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
             {
-                return new StandartResponse<AuthenticatedTokenResponse>()
+                return new StandartResponse<ResponseAuthenticated>()
                 {
                     Message = "account not found",
                     StatusCode = StatusCode.ErrorAuthenticate
                 };
             }
 
-            return new StandartResponse<AuthenticatedTokenResponse>()
+            return new StandartResponse<ResponseAuthenticated>()
             {
                 Data = _tokenService.GenerateAuthenticatedToken(account).Data,
                 StatusCode = StatusCode.AccountAuthenticate
             };
         }
 
-        public Task<BaseResponse<AuthenticatedTokenResponse>> AuthenticateByRefreshToken(UserAccsessToken tokenAuth, string refreshToken)
+        public Task<BaseResponse<ResponseAuthenticated>> AuthenticateByRefreshToken(UserAccsessToken tokenAuth, string refreshToken)
         {
             var claimsRT = _tokenService.GetPrincipalFromExpiredToken(refreshToken, _jwtSettings.RefreshTokenSecretKey);
             var secretNumber = claimsRT?.Data?.Claims.FirstOrDefault(x => x.Type == CustomClaimType.SecretNumber);
@@ -82,7 +83,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             {
                 // Проверка в Redis
             }
-            return  Task.FromResult<BaseResponse<AuthenticatedTokenResponse>>(new StandartResponse<AuthenticatedTokenResponse> { Message = "Refresh token or access token is not valid" });
+            return  Task.FromResult<BaseResponse<ResponseAuthenticated>>(new StandartResponse<ResponseAuthenticated> { Message = "Refresh token or access token is not valid" });
         }
     }
 }
