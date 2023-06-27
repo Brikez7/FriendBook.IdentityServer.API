@@ -13,7 +13,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public HomeController(ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
-            UserToken = new Lazy<UserAccsessToken>(() => UserAccsessToken.CreateUserToken(httpContextAccessor.HttpContext.User.Claims));
+            UserToken = new Lazy<UserAccsessToken>(() => UserAccsessToken.CreateUserToken(httpContextAccessor.HttpContext!.User.Claims));
         }
         [HttpGet("GetClaims")]
         [Authorize]

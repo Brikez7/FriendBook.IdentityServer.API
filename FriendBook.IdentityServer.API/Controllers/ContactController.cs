@@ -20,7 +20,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             _logger = logger;
             _contactService = contactService;
             _contactValidationService = validationService;
-            UserToken = userAccessTokenService.CreateUser(httpContextAccessor.HttpContext.User.Claims);
+            UserToken = userAccessTokenService.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
         }
 
         [HttpGet("getMyContact")]

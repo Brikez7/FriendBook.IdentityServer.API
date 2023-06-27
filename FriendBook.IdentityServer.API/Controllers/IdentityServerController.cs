@@ -57,24 +57,6 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(response);
         }
 
-/*        [HttpGet("CheckUserExists")]
-        public async Task<IActionResult> CheckUserExists([FromQuery] Guid userId)
-        {
-            var response = await _accountService.GetAccount(x => x.Id == userId);
-
-            return Ok(new StandartResponse<bool>()
-            {
-                Data = response.Data is not null
-            });
-        }
-
-        [HttpPost("GetLoginsUsers")]
-        public async Task<IActionResult> GetLoginsUsers([FromBody] Guid[] usersIds)//Возможности для оптимизации
-        {
-            var response = await _accountService.GetLogins(usersIds);
-            return Ok(response);
-        }*/
-
 
         [HttpGet("CheckToken")]
         [Authorize]

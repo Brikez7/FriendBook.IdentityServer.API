@@ -9,10 +9,6 @@ namespace FriendBook.IdentityServer.API.DAL
         public const string NameConnection = "NpgConnectionString";
         public DbSet<Account> Accounts { get; set; }
 
-        public void UpdateDatabase()
-        {
-            Database.Migrate();
-        }
         public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
