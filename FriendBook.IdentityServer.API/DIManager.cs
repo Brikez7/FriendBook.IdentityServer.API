@@ -88,7 +88,7 @@ namespace FriendBook.IdentityServer.API
             webApplicationBuilder.Services.Configure<GrpcSettings>(webApplicationBuilder.Configuration.GetSection(GrpcSettings.Name));
 
             webApplicationBuilder.Services.AddHostedService<CheckDBHostedService>();
-            webApplicationBuilder.Services.AddHostedService<GrpcEndpoinListenHostService>();
+            webApplicationBuilder.Services.AddHostedService<GrpcEndpointListenHostService>();
         }
         public static void AddMiddleware(this WebApplication webApplication)
         {

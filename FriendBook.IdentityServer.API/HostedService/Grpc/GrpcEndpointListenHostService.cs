@@ -5,11 +5,11 @@ using System.Net;
 
 namespace FriendBook.IdentityServer.API.HostedService.Grpc
 {
-    public class GrpcEndpoinListenHostService : BackgroundService
+    public class GrpcEndpointListenHostService : BackgroundService
     {
         private readonly GrpcSettings _grpcSettings;
 
-        public GrpcEndpoinListenHostService(IOptions<GrpcSettings> grpcSettings)
+        public GrpcEndpointListenHostService(IOptions<GrpcSettings> grpcSettings)
         {
             _grpcSettings = grpcSettings.Value;
         }
