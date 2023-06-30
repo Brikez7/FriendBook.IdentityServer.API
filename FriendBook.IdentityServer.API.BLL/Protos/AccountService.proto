@@ -1,0 +1,35 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FriendBook.IdentityServer.API.BLL.gRPCClients.AccountService";
+
+package AccountService;
+
+service PublicAccount
+{
+  rpc CheckUserExists (RequestUserId) returns (ResponseUserExists);
+  rpc GetUsersLoginWithId (RequestUsersId) returns (ResponseUsers);
+}
+
+message RequestUserId
+{
+  string AccountId = 1;
+}
+message ResponseUserExists
+{
+  bool Exists = 1;
+}
+
+message RequestUsersId
+{
+  repeated string UserId = 1;
+}
+
+message User
+{
+  string Id = 1;
+  string Login = 2;
+}
+message ResponseUsers {
+  repeated User Users = 1;
+}
+

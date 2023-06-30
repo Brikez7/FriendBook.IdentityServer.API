@@ -11,3 +11,4 @@ namespace FriendBook.IdentityServer.API.DAL.Repositories.Interfaces
         public Task<bool> SaveAsync();
     }
 }
+ 

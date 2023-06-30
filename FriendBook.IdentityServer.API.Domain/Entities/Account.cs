@@ -1,4 +1,4 @@
-﻿using FriendBook.IdentityServer.API.Domain.DTO;
+﻿using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 
 namespace FriendBook.IdentityServer.API.Domain.Entities
 {
@@ -23,9 +23,28 @@ namespace FriendBook.IdentityServer.API.Domain.Entities
             CreateDate = DateTime.Now;
             Salt = salt;
         }
-
+        public Account(AccountDTO model) 
+        {
+            Login = model.Login;
+            Password = model.Password;
+        }
         public Account()
         {
+        }
+
+        public Account(UserContactDTO userContactDTO)
+        {
+            FullName = userContactDTO.FullName;
+            Email = userContactDTO.Email;
+            Login = userContactDTO.Login;
+            Info = userContactDTO.Info;
+            Profession = userContactDTO.Profession;
+            Telephone = userContactDTO.Telephone;
+        }
+
+        public Account(UserContactDTO userContactDTO, Guid userId) : this(userContactDTO)
+        {
+            Id = userId;
         }
     }
 }

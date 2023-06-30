@@ -1,6 +1,5 @@
-
-using FriendBook.IdentityServer.API;
 using FriendBook.IdentityServer.API.DAL;
+using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
 
 namespace FriendBook.IdentityServer.API
@@ -11,31 +10,39 @@ namespace FriendBook.IdentityServer.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
             builder.Services.AddSingleton(builder.Configuration);
+
             builder.AddRepositores();
+            builder.AddAuthProperty();
             builder.AddServices();
-            builder.AddJWT();
+            builder.AddValidators();
+            builder.AddRedisPropperty();
 
-            builder.Services.AddDbContext<AppDBContext>(opt => opt.UseNpgsql(
-                builder.Configuration.GetConnectionString(AppDBContext.NameConnection)));
+            builder.Services.AddDbContext<IdentityContext>(opt => opt.UseNpgsql(
+                builder.Configuration.GetConnectionString(IdentityContext.NameConnection)));
+            builder.AddHostedServices();
 
+            builder.Services.Configure<AppUISetting>(builder.Configuration.GetSection("AppUISetting"));
+
+            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            app.AddCorsUI();
+
+            app.UseCors();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

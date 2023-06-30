@@ -1,6 +1,7 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.DAL;
-using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
+using FriendBook.IdentityServer.API.Domain.InnerResponse;
+using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,75 +13,56 @@ namespace FriendBook.IdentityServer.API.Controllers
     {
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
-        private readonly IAccountService _accountService;
-        private readonly AppDBContext _db;
-
-        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService, IAccountService accountService, AppDBContext appDB)
+        private readonly IValidationService<AccountDTO> _accountValidationService;
+        private readonly IAccessTokenService _userAccessTokenService;
+        public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService,
+            IValidationService<AccountDTO> accountValidationService, IAccessTokenService userAccessTokenService)
         {
             _logger = logger;
             _registrationService = registrationService;
-            _accountService = accountService;
-            _db = appDB;
+            _accountValidationService = accountValidationService;
+            _userAccessTokenService = userAccessTokenService;
         }
 
-        [HttpPost("Authenticate/")]
-        public async Task<IResult> Authenticate(AccountDTO accountDTO)
+        [HttpPost("Authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
         {
-            if (accountDTO == null)
-            {
-                return Results.NotFound();
-            }
-            var resourse = await _registrationService.Authenticate(accountDTO);
-            if (resourse.Data.Item1 == null)
-            {
-                return Results.NoContent();
-            }
-            else
-            {
-                return Results.Json(new { token = resourse.Data.Item1, id = resourse.Data.Item2 });
-            }
+            var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
+            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
+                return Ok(responseValidation);
+
+            var response = await _registrationService.Authenticate(accountDTO);
+            return Ok(response);
         }
 
-        [HttpPost("Registration/")]
-        public async Task<IResult> Registration(AccountDTO accountDTO)
+        [HttpPost("AuthenticateByRefreshToken")]
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] TokenAuth accessToken,[FromQuery] string refreshToken)
         {
-            if (accountDTO == null)
-            {
-                return Results.NotFound();
-            }
-            var resourse = await _registrationService.Registration(accountDTO);
-            if (resourse.Data.Item1 == null)
-            {
-                return Results.NoContent();
-            }
-            else
-            {
-                return Results.Json(new { token = resourse.Data.Item1, id = resourse.Data.Item2 });
-            }
-        }
-        [HttpGet("CreateDatabase")]
-        public async Task<IResult> CreateDatabase() 
-        {
-            using (var db = _db) 
-            {
-                db.Database.EnsureCreated();
-            }
-            return Results.Json(new { unswer = "ok" });
+            var responseAuthenicated = await _registrationService.AuthenticateByRefreshToken(accessToken, refreshToken);
+            return Ok(responseAuthenicated);
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpDelete("Delete/{id}")]
-        public async Task<IResult> Delete(Guid id)
+        [HttpPost("Registration")]
+        public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
         {
-            var resourse = await _accountService.DeleteAccount(x => x.Id == id);
-            if (resourse.Data)
+            var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
+            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
+                return Ok(responseValidation);
+
+            var response = await _registrationService.Registration(accountDTO);
+            return Ok(response);
+        }
+
+
+        [HttpGet("CheckToken")]
+        [Authorize]
+        public IActionResult CheckToken()
+        {
+            return Ok(new StandartResponse<bool>
             {
-                return Results.Ok(resourse.Data);
-            }
-            else
-            {
-                return Results.StatusCode(500);
-            }
+                Data = true,
+                StatusCode = Domain.StatusCode.OK
+            });
         }
     }
 }

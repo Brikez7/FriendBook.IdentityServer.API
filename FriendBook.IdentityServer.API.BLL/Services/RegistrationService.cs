@@ -1,137 +1,97 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
+using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.DTO;
+using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
-using FriendBook.IdentityServer.API.Domain.Enums;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
-using FriendBook.IdentityServer.API.Domain.JWT;
-using HCL.IdentityServer.API.Domain.Enums;
+using FriendBook.IdentityServer.API.Domain.Settings;
+using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace FriendBook.IdentityServer.API.BLL.Services
 {
     public class RegistrationService : IRegistrationService
     {
         protected readonly ILogger<RegistrationService> _logger;
-        private readonly JWTSettings _options;
         private readonly IAccountService _accountService;
-
-        public RegistrationService(ILogger<RegistrationService> logger, IOptions<JWTSettings> options, IAccountService accountService)
+        private readonly ITokenService _tokenService;
+        private readonly IPasswordService _passwordService;
+        private readonly IRedisLockService _redisLockService;
+        private readonly JWTSettings _jwtSettings;
+        public RegistrationService(ILogger<RegistrationService> logger, IAccountService accountService, ITokenService tokenService, IPasswordService passwordService, IOptions<JWTSettings> jwtOptions,
+            IRedisLockService redisLockService)
         {
             _logger = logger;
-            _options = options.Value;
             _accountService = accountService;
+            _tokenService = tokenService;
+            _passwordService = passwordService;
+            _jwtSettings = jwtOptions.Value;
+            _redisLockService = redisLockService;
         }
-        public async Task<BaseResponse<(string, Guid)>> Registration(AccountDTO DTO)
+        public async Task<BaseResponse<ResponseAuthenticated>> Registration(AccountDTO accountDTO)
         {
-            try
+            var responseAccount = await _accountService.GetAccount(x => x.Login == accountDTO.Login);
+            if (responseAccount.StatusCode == StatusCode.EntityNotFound)
             {
-                var accountOnRegistration = (await _accountService.GetAccount(x => x.Login == DTO.Login)).Data;
-                if (accountOnRegistration != null)
+                _passwordService.CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
+
+                var responseNewAccount = await _accountService.CreateAccount(newAccount);
+
+                newAccount = responseNewAccount.Data;
+                var authToken = (await Authenticate(accountDTO)).Data;
+                return new StandartResponse<ResponseAuthenticated>()
                 {
-                    return new StandartResponse<(string, Guid)>()
-                    {
-                        Message = "Account with that login alredy exist"
-                    };
-                }
-                CreatePasswordHash(DTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                var newAccount = new Account(DTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
-                newAccount = (await _accountService.CreateAccount(newAccount)).Data;
-                return new StandartResponse<(string, Guid)>()
-                {
-                    Data = (await Authenticate(DTO)).Data,
+                    Data = authToken,
                     StatusCode = StatusCode.AccountCreate
                 };
-
             }
-            catch (Exception ex)
+            return new StandartResponse<ResponseAuthenticated>()
             {
-                _logger.LogError(ex, $"[Registration] : {ex.Message}");
-                return new StandartResponse<(string, Guid)>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public async Task<BaseResponse<(string, Guid)>> Authenticate(AccountDTO DTO)
-        {
-            try
-            {
-                var account = await _accountService.GetAccount(x => x.Login == DTO.Login);
-                if (account.Data == null ||
-                    !VerifyPasswordHash(DTO.Password, Convert.FromBase64String(account.Data.Password), Convert.FromBase64String(account.Data.Salt)))
-                {
-                    return new StandartResponse<(string, Guid)>()
-                    {
-                        Message = "account not found"
-                    };
-                }
-                string token = GetToken(account.Data);
-                return new StandartResponse<(string, Guid)>()
-                {
-                    Data = (token, (Guid)account.Data.Id),
-                    StatusCode = StatusCode.AccountAuthenticate
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[Authenticate] : {ex.Message}");
-                return new StandartResponse<(string, Guid)>()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public string GetToken(Account account)
-        {
-            /// имг паф и пароль?
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier,account.Login),
-                new Claim(CustomClaimType.Post, account.Profession),
-                new Claim(CustomClaimType.AccountId, account.Id.ToString())
+                Message = "Account with login already exists",
+                StatusCode = StatusCode.AccountAlraedyExists
             };
-
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-
-            var jwt = new JwtSecurityToken(
-                    issuer: _options.Issuer,
-                    audience: _options.Audience,
-                    claims: claims,
-                    expires: DateTime.Now.Add(TimeSpan.FromMinutes(JWTSettings.StartJWTTokenLifeTime)),
-                    notBefore: DateTime.Now,
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public async Task<BaseResponse<ResponseAuthenticated>> Authenticate(AccountDTO accountDTO)
         {
-            using (var hmac = new HMACSHA512())
+            var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
+            if (account == null ||
+                !_passwordService.VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
             {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return new StandartResponse<ResponseAuthenticated>()
+                {
+                    Message = "Account not found",
+                    StatusCode = StatusCode.ErrorAuthenticate
+                };
             }
+
+            return new StandartResponse<ResponseAuthenticated>()
+            {
+                Data = _tokenService.GenerateAuthenticatedToken(new TokenAuth(account.Login,(Guid)account.Id!)).Data,
+                StatusCode = StatusCode.AccountAuthenticate
+            };
         }
 
-        private bool VerifyPasswordHash(string Password, byte[] passwordHash, byte[] passwordSalt)
+        public async Task<BaseResponse<ResponseAuthenticated>> AuthenticateByRefreshToken(TokenAuth tokenAuth, string refreshToken)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(Password));
+            var claimsRT = _tokenService.GetPrincipalFromExpiredToken(refreshToken, _jwtSettings.RefreshTokenSecretKey);
 
-                return computedHash.SequenceEqual(passwordHash);
+            var userSecretNumber = claimsRT?.Data?.Claims.FirstOrDefault(x => x.Type == CustomClaimType.SecretNumber)?.Value;
+            if (claimsRT?.StatusCode == StatusCode.TokenRead || userSecretNumber != null)
+            {
+                var secretNumberResponse = await _redisLockService.GetSecretNumber(tokenAuth.Id.ToString());
+                if (secretNumberResponse.StatusCode == StatusCode.RedisReceive && secretNumberResponse.Data == userSecretNumber) 
+                {
+                    var newAccessToken = _tokenService.GenerateAccessToken(tokenAuth);
+                    return new StandartResponse<ResponseAuthenticated> {Data = new ResponseAuthenticated(newAccessToken,refreshToken), StatusCode = StatusCode.AccountAuthenticateByRT };
+                }
+                return new StandartResponse<ResponseAuthenticated> { Message = "Secret number not found please go to authorization", StatusCode = StatusCode.ErrorAuthenticate };
             }
+            return  new StandartResponse<ResponseAuthenticated> { Message = "Refresh token or access token is not valid", StatusCode = StatusCode.ErrorAuthenticate };
         }
     }
 }

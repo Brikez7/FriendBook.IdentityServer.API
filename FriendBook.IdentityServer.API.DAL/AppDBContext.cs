@@ -4,18 +4,14 @@ using System.Reflection;
 
 namespace FriendBook.IdentityServer.API.DAL
 {
-    public partial class AppDBContext : DbContext
+    public partial class IdentityContext : DbContext
     {
         public const string NameConnection = "NpgConnectionString";
         public DbSet<Account> Accounts { get; set; }
 
-        public void UpdateDatabase()
+        public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
         {
-            Database.EnsureDeleted();
-            Database.Migrate();
-        }
-        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
-        {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
