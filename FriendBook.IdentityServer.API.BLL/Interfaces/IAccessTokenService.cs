@@ -7,6 +7,6 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
     public interface IAccessTokenService
     {
         public Lazy<TokenAuth> CreateUser(IEnumerable<Claim> claims);
-        public BaseResponse<TokenAuth> CreateUserTokenTryEmpty(IEnumerable<Claim> claims);
+        public BaseResponse<TokenAuth?> CreateUserTokenTryEmpty(IEnumerable<Claim> claims);
     }
 }

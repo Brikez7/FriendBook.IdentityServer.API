@@ -76,7 +76,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<ResponseAuthenticated>> AuthenticateByRefreshToken(TokenAuth tokenAuth, string refreshToken)
+        public async Task<BaseResponse<string?>> GetAccessToken(TokenAuth tokenAuth, string refreshToken)
         {
             var claimsRT = _tokenService.GetPrincipalFromExpiredToken(refreshToken, _jwtSettings.RefreshTokenSecretKey);
 
@@ -87,11 +87,11 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 if (secretNumberResponse.StatusCode == StatusCode.RedisReceive && secretNumberResponse.Data == userSecretNumber) 
                 {
                     var newAccessToken = _tokenService.GenerateAccessToken(tokenAuth);
-                    return new StandartResponse<ResponseAuthenticated> {Data = new ResponseAuthenticated(newAccessToken,refreshToken), StatusCode = StatusCode.AccountAuthenticateByRT };
+                    return new StandartResponse<string?> {Data = refreshToken, StatusCode = StatusCode.AccountAuthenticateByRT };
                 }
-                return new StandartResponse<ResponseAuthenticated> { Message = "Secret number not found please go to authorization", StatusCode = StatusCode.ErrorAuthenticate };
+                return new StandartResponse<string?> { Message = "Secret number not found please go to authorization", StatusCode = StatusCode.ErrorAuthenticate };
             }
-            return  new StandartResponse<ResponseAuthenticated> { Message = "Refresh token or access token is not valid", StatusCode = StatusCode.ErrorAuthenticate };
+            return  new StandartResponse<string?> { Message = "Refresh token or access token is not valid", StatusCode = StatusCode.ErrorAuthenticate };
         }
     }
 }
