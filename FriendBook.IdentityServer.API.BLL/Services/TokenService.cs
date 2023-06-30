@@ -5,6 +5,7 @@ using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using FriendBook.IdentityServer.API.Domain.Settings.JWT;
+using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,13 +18,15 @@ namespace FriendBook.IdentityServer.API.BLL.Services
     public class TokenService : ITokenService
     {
         private readonly JWTSettings _JWTSettings;
+        private readonly IRedisLockService _redisLockService;
 
-        public TokenService(IOptions<JWTSettings> optionJWTSettings)
+        public TokenService(IOptions<JWTSettings> optionJWTSettings, IRedisLockService redisLockService)
         {
             _JWTSettings = optionJWTSettings.Value;
+            _redisLockService = redisLockService;
         }
 
-        string ITokenService.GenerateAccessToken(Account account)
+        public string GenerateAccessToken(TokenAuth account)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -36,7 +39,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return jwtToken;
         }
 
-        string ITokenService.GenerateRefreshToken(Account account)
+        public async Task<string> GenerateRefreshToken(TokenAuth account)
         {
             string SecretNumber;
             var randomNumber = new byte[32];
@@ -53,8 +56,9 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
             var jwtToken = GenerateToken(_JWTSettings.RefreshTokenSecretKey, _JWTSettings.Issuer, _JWTSettings.Audience, _JWTSettings.RefreshTokenExpirationMinutes, claims);
 
+            _ = _redisLockService.SetSecretNumber(SecretNumber,account.Id.ToString());
+            
             return jwtToken;
-            // Добавить в Redis SecretNumber c ключ L`ogin + Id
         }
 
         private static string GenerateToken(string secretKey, string issuer, string audience, double expires, IEnumerable<Claim>? claims = null)
@@ -92,13 +96,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             SecurityToken securityToken;
 
             if(!tokenHandler.CanReadToken(token))
-                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = StatusCode.InternalServerError };
+                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = StatusCode.TokenNotValid };
 
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = StatusCode.InternalServerError };
-            return new StandartResponse<ClaimsPrincipal> { Data = principal };
+                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = StatusCode.TokenNotValid };
+            return new StandartResponse<ClaimsPrincipal> { Data = principal, StatusCode = StatusCode.TokenRead };
         }
     }
 }

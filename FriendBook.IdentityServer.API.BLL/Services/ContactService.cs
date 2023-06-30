@@ -26,8 +26,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             {
                 return new StandartResponse<bool>()
                 {
-                    Message = "entity not found",
-                    StatusCode = StatusCode.InternalServerError
+                    Message = "Contact not found",
+                    StatusCode = StatusCode.EntityNotFound
                 };
             }
             var accountIsDelete = _contactRepository.Clear(entity);
@@ -35,30 +35,31 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return new StandartResponse<bool>()
             {
                 Data = accountIsDelete,
-                StatusCode = StatusCode.AccountDelete
+                StatusCode = StatusCode.ContactClear
             };
         }
 
         public async Task<BaseResponse<ResponseProfile[]>> GetAllProphile(string login, Guid id)
         {
             var entities = await _contactRepository.GetAll()
-                                                .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%") && x.Id != id)
-                                                .Select(x => new ResponseProfile((Guid)x.Id!, x.Login, x.FullName))
-                                                .ToListAsync();
+                                                   .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%") && x.Id != id)
+                                                   .Select(x => new ResponseProfile((Guid)x.Id!, x.Login, x.FullName))
+                                                   .ToListAsync();
 
-            var array = entities.ToArray();
-            if (array == null || array.Length == 0)
+
+            if (entities.Count > 0)
             {
                 return new StandartResponse<ResponseProfile[]>()
                 {
-                    StatusCode = StatusCode.InternalServerError,
-                    Message = "entity not found"
+                    Data = entities.ToArray(),
+                    StatusCode = StatusCode.AccountRead
                 };
             }
             return new StandartResponse<ResponseProfile[]>()
             {
-                Data = array,
-                StatusCode = StatusCode.AccountRead
+
+                Message = "Prophiles not found",
+                StatusCode = StatusCode.EntityNotFound
             };
         }
 
@@ -70,8 +71,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             {
                 return new StandartResponse<UserContactDTO>()
                 {
-                    StatusCode = StatusCode.InternalServerError,
-                    Message = "entity not found"
+                    StatusCode = StatusCode.EntityNotFound,
+                    Message = "Contact not found"
                 };
             }
             return new StandartResponse<UserContactDTO>()
@@ -83,28 +84,20 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login, Guid idUser)
         {
-            if (contactDTO.Login == "") 
-            {
-                return new StandartResponse<UserContactDTO>()
-                {
-                    Message = "Login is null",
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-
             var userId = await _contactRepository.GetAll()
                                                  .Select(x => new { x.Id,x.Login})
-                                                 .SingleOrDefaultAsync(x => x.Login == contactDTO.Login && idUser == x.Id);
+                                                 .SingleOrDefaultAsync(x => x.Login == contactDTO.Login);
 
-            if (userId is null && login != contactDTO.Login)  
+            if (userId is null && userId?.Id != idUser)  
             {
                 return new StandartResponse<UserContactDTO>()
                 {
-                    Message = "an account with this username already exists",
-                    StatusCode = StatusCode.InternalServerError,
+                    Message = "an account with username already exists",
+                    StatusCode = StatusCode.AccountAlraedyExists,
                 };
             }
-            var account = new Account(contactDTO, (Guid)userId.Id);
+
+            var account = new Account(contactDTO, idUser);
             var updatedAccount = _contactRepository.Update(account);
 
             if (updatedAccount is null) 
@@ -112,7 +105,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 return new StandartResponse<UserContactDTO>()
                 {
                     Message = "Account not found",
-                    StatusCode = StatusCode.InternalServerError,
+                    StatusCode = StatusCode.EntityNotFound,
                 };
             }
 

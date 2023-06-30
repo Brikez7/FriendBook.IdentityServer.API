@@ -18,15 +18,10 @@ namespace FriendBook.IdentityServer.API.HostedService
             using var scope = _serviceScopeFactory.CreateScope();
             _appDBContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
 
-            if (await _appDBContext.Database.EnsureCreatedAsync(stoppingToken))
+            if (!await _appDBContext.Database.CanConnectAsync() || (await _appDBContext.Database.GetPendingMigrationsAsync(stoppingToken)).Any())
             {
                 await _appDBContext.Database.MigrateAsync(stoppingToken);
                 return;
-            }
-
-            if ((await _appDBContext.Database.GetPendingMigrationsAsync(stoppingToken)).Any())
-            {
-                await _appDBContext.Database.MigrateAsync(stoppingToken);
             }
 
             return;

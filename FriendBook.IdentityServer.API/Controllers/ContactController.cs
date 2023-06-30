@@ -13,9 +13,9 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly ILogger<ContactController> _logger;
         private readonly IContactService _contactService;
         private readonly IValidationService<UserContactDTO> _contactValidationService;
-        public Lazy<UserAccsessToken> UserToken { get; set; }
+        public Lazy<TokenAuth> UserToken { get; set; }
         public ContactController(ILogger<ContactController> logger, IContactService contactService, IValidationService<UserContactDTO> validationService,
-            IUserAccessTokenService userAccessTokenService, IHttpContextAccessor httpContextAccessor)
+            IAccessTokenService userAccessTokenService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _contactService = contactService;
@@ -23,12 +23,12 @@ namespace FriendBook.IdentityServer.API.Controllers
             UserToken = userAccessTokenService.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
         }
 
-        [HttpGet("getMyContact")]
+/*        [HttpGet("getMyContact")] Исправить на React
         public async Task<IActionResult> GetContactInformation()
         {
             var response = await _contactService.GetContact(x => x.Id == UserToken.Value.Id);
             return Ok(response);
-        }
+        }*/
 
         [HttpGet("getContact/{id}")]
         public async Task<IActionResult> GetContactInformation([FromRoute] Guid id)
@@ -41,7 +41,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
         {
             var responseValidation = await _contactValidationService.ValidateAsync(userContactDTO);
-            if (responseValidation is not null)
+            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
                 return Ok(responseValidation);
 
             var response = await _contactService.UpdateContact(userContactDTO, UserToken.Value.Login,UserToken.Value.Id);

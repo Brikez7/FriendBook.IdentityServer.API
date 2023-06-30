@@ -7,34 +7,34 @@ using System.Security.Claims;
 
 namespace FriendBook.IdentityServer.API.BLL.Services
 {
-    public class UserAccessTokenService : IUserAccessTokenService
+    public class AccessTokenService : IAccessTokenService
     {
-        public UserAccessTokenService()
+        public AccessTokenService()
         {
         }
 
-        public Lazy<UserAccsessToken> CreateUser(IEnumerable<Claim> claims)
+        public Lazy<TokenAuth> CreateUser(IEnumerable<Claim> claims)
         {
-            return new Lazy<UserAccsessToken>(() => CreateUserToken(claims));
+            return new Lazy<TokenAuth>(() => CreateUserToken(claims));
         }
-        private static UserAccsessToken CreateUserToken(IEnumerable<Claim> claims)
+        private static TokenAuth CreateUserToken(IEnumerable<Claim> claims)
         {
             var login = claims.First(c => c.Type == CustomClaimType.Login).Value;
             var id = Guid.Parse(claims.First(c => c.Type == CustomClaimType.AccountId).Value);
 
-            return new UserAccsessToken(login, id);
+            return new TokenAuth(login, id);
         }
-        public BaseResponse<UserAccsessToken> CreateUserTokenTryEmpty(IEnumerable<Claim> claims)
+        public BaseResponse<TokenAuth> CreateUserTokenTryEmpty(IEnumerable<Claim> claims)
         {
             var login = claims.FirstOrDefault(c => c.Type == CustomClaimType.Login)?.Value;
             var stringId = claims.FirstOrDefault(c => c.Type == CustomClaimType.AccountId)?.Value;
 
             if (stringId == null || login == null)
-                return new StandartResponse<UserAccsessToken> { Message = "Access token not validated", StatusCode = StatusCode.InternalServerError };
+                return new StandartResponse<TokenAuth> { Message = "Access token not validated", StatusCode = StatusCode.TokenNotValid };
 
             var id = stringId is not null ? Guid.Parse(stringId) : Guid.Empty;
 
-            return new StandartResponse<UserAccsessToken> { Data = new UserAccsessToken(login, id) };
+            return new StandartResponse<TokenAuth> { Data = new TokenAuth(login, id) };
         }
     }
 }

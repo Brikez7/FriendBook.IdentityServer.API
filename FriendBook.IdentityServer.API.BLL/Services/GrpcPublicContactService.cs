@@ -11,8 +11,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
     {
         private readonly IContactService _contactService;
         private readonly ILogger<GrpcPublicContactService> _logger;
-        private readonly IUserAccessTokenService _accessTokenService;
-        public GrpcPublicContactService(IContactService contactService, ILogger<GrpcPublicContactService> logger, IUserAccessTokenService accessTokenService)
+        private readonly IAccessTokenService _accessTokenService;
+        public GrpcPublicContactService(IContactService contactService, ILogger<GrpcPublicContactService> logger, IAccessTokenService accessTokenService)
         {
             _contactService = contactService;
             _logger = logger;

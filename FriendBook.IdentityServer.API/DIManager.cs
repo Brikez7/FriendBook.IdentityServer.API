@@ -5,7 +5,6 @@ using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Settings;
-using FriendBook.IdentityServer.API.Domain.Settings.JWT;
 using FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators;
 using FriendBook.IdentityServer.API.HostedService;
 using FriendBook.IdentityServer.API.HostedService.Grpc;
@@ -38,7 +37,8 @@ namespace FriendBook.IdentityServer.API
             webApplicationBuilder.Services.AddScoped<IContactService, ContactService>();
             webApplicationBuilder.Services.AddScoped<ITokenService, TokenService>();
             webApplicationBuilder.Services.AddScoped<IPasswordService, PasswordService>();
-            webApplicationBuilder.Services.AddScoped<IUserAccessTokenService, UserAccessTokenService>();
+            webApplicationBuilder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
+            webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
         }
         public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)
         {

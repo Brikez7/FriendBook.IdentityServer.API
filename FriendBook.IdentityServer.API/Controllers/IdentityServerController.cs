@@ -1,7 +1,7 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.UserToken;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
+using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +14,9 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IValidationService<AccountDTO> _accountValidationService;
-        private readonly IUserAccessTokenService _userAccessTokenService;
+        private readonly IAccessTokenService _userAccessTokenService;
         public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService,
-            IValidationService<AccountDTO> accountValidationService, IUserAccessTokenService userAccessTokenService)
+            IValidationService<AccountDTO> accountValidationService, IAccessTokenService userAccessTokenService)
         {
             _logger = logger;
             _registrationService = registrationService;
@@ -28,7 +28,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation is not null)
+            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Authenticate(accountDTO);
@@ -36,13 +36,9 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("AuthenticateByRefreshToken")]
-        public async Task<IActionResult> AuthenticateByRefreshToken([FromQuery] string refreshToken = null!)
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] TokenAuth accessToken,[FromQuery] string refreshToken)
         {
-            var responseUserToken = _userAccessTokenService.CreateUserTokenTryEmpty(User.Claims);
-            if (responseUserToken.Data is null)
-                return Ok(responseUserToken);
-
-            var responseAuthenicated = await _registrationService.AuthenticateByRefreshToken(responseUserToken.Data,refreshToken);
+            var responseAuthenicated = await _registrationService.AuthenticateByRefreshToken(accessToken, refreshToken);
             return Ok(responseAuthenicated);
         }
 
@@ -50,7 +46,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation is not null)
+            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Registration(accountDTO);

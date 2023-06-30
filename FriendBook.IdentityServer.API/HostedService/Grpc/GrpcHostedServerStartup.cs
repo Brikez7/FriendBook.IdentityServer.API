@@ -39,7 +39,7 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
             services.AddDbContext<IdentityContext>(opt => opt.UseNpgsql(
                 _configuration.GetConnectionString(IdentityContext.NameConnection)));
 
-            services.AddScoped<IUserAccessTokenService, UserAccessTokenService>();
+            services.AddScoped<IAccessTokenService, AccessTokenService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
