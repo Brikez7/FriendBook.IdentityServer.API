@@ -27,6 +27,7 @@
         RedisEmpty = 42,
         RedisReceive = 43,
 
+        EntityIsValid = 54,
         ErrorValidation = 55,
 
         OKNoContent = 199,

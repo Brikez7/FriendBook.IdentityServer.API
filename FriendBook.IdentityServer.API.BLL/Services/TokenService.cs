@@ -56,7 +56,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
             var jwtToken = GenerateToken(_JWTSettings.RefreshTokenSecretKey, _JWTSettings.Issuer, _JWTSettings.Audience, _JWTSettings.RefreshTokenExpirationMinutes, claims);
 
-            _ = _redisLockService.SetSecretNumber(SecretNumber,account.Id.ToString());
+            _ = _redisLockService.SetSecretNumber(SecretNumber,"Token:" + account.Id.ToString());
             
             return jwtToken;
         }

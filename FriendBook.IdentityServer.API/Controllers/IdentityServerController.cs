@@ -14,21 +14,19 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IValidationService<AccountDTO> _accountValidationService;
-        private readonly IAccessTokenService _userAccessTokenService;
         public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService,
-            IValidationService<AccountDTO> accountValidationService, IAccessTokenService userAccessTokenService)
+            IValidationService<AccountDTO> accountValidationService)
         {
             _logger = logger;
             _registrationService = registrationService;
             _accountValidationService = accountValidationService;
-            _userAccessTokenService = userAccessTokenService;
         }
 
         [HttpPost("Authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
+            if (responseValidation.StatusCode != Domain.StatusCode.EntityIsValid)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Authenticate(accountDTO);
@@ -46,7 +44,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation.StatusCode == Domain.StatusCode.ErrorValidation)
+            if (responseValidation.StatusCode != Domain.StatusCode.EntityIsValid)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Registration(accountDTO);
