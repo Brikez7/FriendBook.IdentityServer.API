@@ -87,7 +87,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<Account>> UpdateAccount(AccountDTO accountDTO)
+        public async Task<BaseResponse<Account>> UpdateAccount(RequestAccount accountDTO)
         {
             var account = new Account(accountDTO);
 

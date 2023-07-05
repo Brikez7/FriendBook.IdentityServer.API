@@ -24,10 +24,10 @@ namespace FriendBook.IdentityServer.API
         }
         public static void AddValidators(this WebApplicationBuilder webApplicationBuilder)
         {
-            webApplicationBuilder.Services.AddScoped<IValidator<AccountDTO>, ValidatorAccountDTO>();
+            webApplicationBuilder.Services.AddScoped<IValidator<RequestAccount>, ValidatorAccountDTO>();
             webApplicationBuilder.Services.AddScoped<IValidator<UserContactDTO>, ValidatorUserContactDTO>();
 
-            webApplicationBuilder.Services.AddScoped<IValidationService<AccountDTO>, ValidationService<AccountDTO>>();
+            webApplicationBuilder.Services.AddScoped<IValidationService<RequestAccount>, ValidationService<RequestAccount>>();
             webApplicationBuilder.Services.AddScoped<IValidationService<UserContactDTO>, ValidationService<UserContactDTO>>();
         }
         public static void AddServices(this WebApplicationBuilder webApplicationBuilder)

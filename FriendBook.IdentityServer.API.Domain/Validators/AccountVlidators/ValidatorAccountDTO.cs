@@ -3,7 +3,7 @@ using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 
 namespace FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators
 {
-    public class ValidatorAccountDTO : AbstractValidator<AccountDTO>
+    public class ValidatorAccountDTO : AbstractValidator<RequestAccount>
     {
         public ValidatorAccountDTO()
         {

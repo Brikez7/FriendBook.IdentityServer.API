@@ -13,9 +13,9 @@ namespace FriendBook.IdentityServer.API.Controllers
     {
         private readonly ILogger<IdentityServerController> _logger;
         private readonly IRegistrationService _registrationService;
-        private readonly IValidationService<AccountDTO> _accountValidationService;
+        private readonly IValidationService<RequestAccount> _accountValidationService;
         public IdentityServerController(ILogger<IdentityServerController> logger, IRegistrationService registrationService,
-            IValidationService<AccountDTO> accountValidationService)
+            IValidationService<RequestAccount> accountValidationService)
         {
             _logger = logger;
             _registrationService = registrationService;
@@ -23,7 +23,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] AccountDTO accountDTO)
+        public async Task<IActionResult> Authenticate([FromBody] RequestAccount accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
             if (responseValidation.StatusCode != Domain.StatusCode.EntityIsValid)
@@ -41,7 +41,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("Registration")]
-        public async Task<IActionResult> Registration([FromBody] AccountDTO accountDTO)
+        public async Task<IActionResult> Registration([FromBody] RequestAccount accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
             if (responseValidation.StatusCode != Domain.StatusCode.EntityIsValid)

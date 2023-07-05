@@ -30,7 +30,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             _jwtSettings = jwtOptions.Value;
             _redisLockService = redisLockService;
         }
-        public async Task<BaseResponse<ResponseAuthenticated>> Registration(AccountDTO accountDTO)
+        public async Task<BaseResponse<ResponseAuthenticated>> Registration(RequestAccount accountDTO)
         {
             var responseAccount = await _accountService.GetAccount(x => x.Login == accountDTO.Login);
             if (responseAccount.StatusCode == StatusCode.EntityNotFound)
@@ -56,7 +56,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<ResponseAuthenticated>> Authenticate(AccountDTO accountDTO)
+        public async Task<BaseResponse<ResponseAuthenticated>> Authenticate(RequestAccount accountDTO)
         {
             var account = (await _accountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
             if (account == null ||

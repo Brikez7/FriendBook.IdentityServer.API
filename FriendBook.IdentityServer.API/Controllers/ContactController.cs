@@ -23,21 +23,14 @@ namespace FriendBook.IdentityServer.API.Controllers
             UserToken = userAccessTokenService.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
         }
 
-/*        [HttpGet("getMyContact")] Исправить на React
-        public async Task<IActionResult> GetContactInformation()
-        {
-            var response = await _contactService.GetContact(x => x.Id == UserToken.Value.Id);
-            return Ok(response);
-        }*/
-
-        [HttpGet("getContact/{id}")]
+        [HttpGet("Get/{id}")]
         public async Task<IActionResult> GetContactInformation([FromRoute] Guid id)
         {
             var response = await _contactService.GetContact(x => x.Id == id);
             return Ok(response);
         }
 
-        [HttpPut("updateMyContactInformation")]
+        [HttpPut("Update")]
         public async Task<IActionResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
         {
             var responseValidation = await _contactValidationService.ValidateAsync(userContactDTO);

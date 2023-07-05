@@ -39,7 +39,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return jwtToken;
         }
 
-        public async Task<string> GenerateRefreshToken(TokenAuth account)
+        public string GenerateRefreshToken(TokenAuth account)
         {
             string SecretNumber;
             var randomNumber = new byte[32];

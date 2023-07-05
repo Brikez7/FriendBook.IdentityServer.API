@@ -25,18 +25,5 @@ namespace FriendBook.IdentityServer.API.Controllers
             var claims = UserToken.Value;
             return Ok(claims);
         }
-
-        [HttpPost("SetRedis")]
-        public async Task<IActionResult> SetRedis([FromBody] string Param, [FromQuery] string key)
-        {
-            await RedisLockService.SetSecretNumber(Param, key);
-            return Ok("Set");
-        }
-        [HttpGet("GetRedis")]
-        public async Task<IActionResult> GetRedis([FromQuery] string key) 
-        {
-            var value = await RedisLockService.GetSecretNumber(key);
-            return Ok(value);
-        }
     }
 }
