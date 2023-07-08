@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendBook.IdentityServer.API", "FriendBook.IdentityServer.API\FriendBook.IdentityServer.API.csproj", "{8EF8CF16-11E9-4D27-8274-FB252102EC2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.API", "FriendBook.IdentityServer.API\FriendBook.IdentityServer.API.csproj", "{8EF8CF16-11E9-4D27-8274-FB252102EC2A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.API.BLL", "FriendBook.IdentityServer.API.BLL\FriendBook.IdentityServer.API.BLL.csproj", "{1A5706DE-1FC0-4A99-8055-27B958FD9033}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.API.DAL", "FriendBook.IdentityServer.API.DAL\FriendBook.IdentityServer.API.DAL.csproj", "{B5CCBE53-CD11-43C3-A078-19EE5CC4A28B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.API.Domain", "FriendBook.IdentityServer.API.Domain\FriendBook.IdentityServer.API.Domain.csproj", "{FC33E22E-8D05-47FC-B666-24741F10DDE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendBook.IdentityServer.Tests", "FriendBook.IdentityServer.Tests\FriendBook.IdentityServer.Tests.csproj", "{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{FC33E22E-8D05-47FC-B666-24741F10DDE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC33E22E-8D05-47FC-B666-24741F10DDE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC33E22E-8D05-47FC-B666-24741F10DDE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
