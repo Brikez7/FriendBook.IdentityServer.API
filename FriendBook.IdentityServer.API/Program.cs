@@ -30,7 +30,6 @@ namespace FriendBook.IdentityServer.API
 
             var app = builder.Build();
 
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

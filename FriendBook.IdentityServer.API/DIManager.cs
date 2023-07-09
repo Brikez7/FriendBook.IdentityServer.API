@@ -43,7 +43,7 @@ namespace FriendBook.IdentityServer.API
         public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)
         {
             var redisSettings = webApplicationBuilder.Configuration.GetSection(RedisSettings.Name).Get<RedisSettings>() ??
-                throw new InvalidOperationException($"{RedisSettings.Name} not found in sercret.json");
+                throw new InvalidOperationException($"{RedisSettings.Name} not found in appsettings.json");
 
             webApplicationBuilder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -58,7 +58,7 @@ namespace FriendBook.IdentityServer.API
             webApplicationBuilder.Services.Configure<JWTSettings>(webApplicationBuilder.Configuration.GetSection(JWTSettings.Name));
 
             var jwtSettings = webApplicationBuilder.Configuration.GetSection(JWTSettings.Name).Get<JWTSettings>() ??
-                throw new InvalidOperationException($"{JWTSettings.Name} not found in sercret.json");
+                throw new InvalidOperationException($"{JWTSettings.Name} not found in appsettings.json");
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.AccessTokenSecretKey!));
 

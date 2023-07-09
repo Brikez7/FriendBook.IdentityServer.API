@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.API.Domain", "FriendBook.IdentityServer.API.Domain\FriendBook.IdentityServer.API.Domain.csproj", "{FC33E22E-8D05-47FC-B666-24741F10DDE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendBook.IdentityServer.Tests", "FriendBook.IdentityServer.Tests\FriendBook.IdentityServer.Tests.csproj", "{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendBook.IdentityServer.Tests", "FriendBook.IdentityServer.Tests\FriendBook.IdentityServer.Tests.csproj", "{B4E6AF0B-5475-4BAB-AC20-4D614D1EE098}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
