@@ -8,16 +8,19 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
     public class GrpcEndpointListenHostService : BackgroundService
     {
         private readonly GrpcSettings _grpcSettings;
-
-        public GrpcEndpointListenHostService(IOptions<GrpcSettings> grpcSettings)
+        private readonly IConfiguration _configuration;
+        public GrpcEndpointListenHostService(IOptions<GrpcSettings> grpcSettings, IConfiguration configuration)
         {
             _grpcSettings = grpcSettings.Value;
+            _configuration = configuration;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(builder =>
+            var builder = Host.CreateDefaultBuilder();
+            builder.ConfigureAppConfiguration((config) => config.AddConfiguration(_configuration));
+
+            await builder.ConfigureWebHostDefaults(builder =>
             {
                 builder.ConfigureKestrel(options =>
                 {

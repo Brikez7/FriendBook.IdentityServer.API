@@ -32,15 +32,6 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories
             {
                 services.RemoveDbContext<TDbContext>();
                 services.AddDbContext<TDbContext>(options => { options.UseNpgsql(_postgresContainer.GetConnectionString()); });
-
-                var grpcs = services.SingleOrDefault(d =>
-                    d.ImplementationType == typeof(GrpcHostedServerStartup));
-
-                var grpc = services.SingleOrDefault(d =>
-                    d.ImplementationType == typeof(GrpcEndpointListenHostService));
-
-                services.Remove(grpc);
-                services.Remove(grpcs);
             });
 
             builder.UseEnvironment("Test");
