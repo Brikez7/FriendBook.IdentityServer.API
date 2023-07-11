@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [Authorize]
     public class ContactController : ControllerBase
     {
@@ -40,7 +40,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             var response = await _contactService.UpdateContact(userContactDTO, UserToken.Value.Login,UserToken.Value.Id);
             return Ok(response);
         }
-        // Add in AppUI after this method need remove
+
         [HttpGet("GetProfiles/{login?}")]
         public async Task<IActionResult> GetProfiles([FromRoute] string login = "")
         {

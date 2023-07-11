@@ -26,7 +26,7 @@ namespace FriendBook.IdentityServer.Tests
             await _webHost.DisposeAsync();
         }
         [Test]
-        public async Task Registration()
+        public async Task TestRegistration()
         {
             var accountForRegistration = new RequestAccount()
             {
@@ -35,7 +35,21 @@ namespace FriendBook.IdentityServer.Tests
             };
 
             HttpContent content = JsonContent.Create(accountForRegistration);
-            HttpResponseMessage createdResult = await _httpClient.PostAsync($"api/IdentityServer/Registration", content);
+            HttpResponseMessage createdResult = await _httpClient.PostAsync($"api/v1/IdentityServer/Registration", content);
+
+            Assert.That(createdResult.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+        }
+        [Test]
+        public async Task TestAuthenticate() 
+        {
+            var accountForRegistration = new RequestAccount()
+            {
+                Login = "Ilia",
+                Password = "TestPassword12345!",
+            };
+
+            HttpContent content = JsonContent.Create(accountForRegistration);
+            HttpResponseMessage createdResult = await _httpClient.PostAsync($"api/v1/IdentityServer/Authenticate", content);
 
             Assert.That(createdResult.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
         }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -47,6 +49,8 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories
         {
             await _postgresContainer.DisposeAsync();
             await _redisContainer.DisposeAsync();
+
+            await base.DisposeAsync();
 
             GC.SuppressFinalize(this);
         }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FriendBook.IdentityServer.API.HostedService
 {
-    public class CheckDBHostedService : BackgroundService
+    public class CheckDBHostedService : IHostedService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private IdentityContext? _appDBContext;
@@ -13,7 +13,11 @@ namespace FriendBook.IdentityServer.API.HostedService
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+        public  async Task StartAsync(CancellationToken stoppingToken)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             _appDBContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
@@ -26,5 +30,6 @@ namespace FriendBook.IdentityServer.API.HostedService
 
             return;
         }
+
     }
 }
