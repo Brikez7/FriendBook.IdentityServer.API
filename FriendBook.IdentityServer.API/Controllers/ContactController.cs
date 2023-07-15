@@ -1,4 +1,5 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BLL.Helpers;
+using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +17,12 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly IValidationService<UserContactDTO> _contactValidationService;
         public Lazy<TokenAuth> UserToken { get; set; }
         public ContactController(ILogger<ContactController> logger, IContactService contactService, IValidationService<UserContactDTO> validationService,
-            IAccessTokenService userAccessTokenService, IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _contactService = contactService;
             _contactValidationService = validationService;
-            UserToken = userAccessTokenService.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
+            UserToken = AccessTokenHelper.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
         }
 
         [HttpGet("Get/{id}")]

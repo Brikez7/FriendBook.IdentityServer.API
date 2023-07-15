@@ -20,7 +20,6 @@ namespace FriendBook.IdentityServer.API
         public static void AddRepositories(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IAccountRepository, AccountRepository>();
-            webApplicationBuilder.Services.AddScoped<IContactRepository, ContactRepository>();
         }
         public static void AddValidators(this WebApplicationBuilder webApplicationBuilder)
         {
@@ -32,12 +31,11 @@ namespace FriendBook.IdentityServer.API
         }
         public static void AddServices(this WebApplicationBuilder webApplicationBuilder)
         {
-            webApplicationBuilder.Services.AddScoped<IAccountService, AccountService>();
+            webApplicationBuilder.Services.AddScoped<IUserAccountService, UserAccountService>();
             webApplicationBuilder.Services.AddScoped<IRegistrationService, RegistrationService>();
             webApplicationBuilder.Services.AddScoped<IContactService, ContactService>();
             webApplicationBuilder.Services.AddScoped<ITokenService, TokenService>();
             webApplicationBuilder.Services.AddScoped<IPasswordService, PasswordService>();
-            webApplicationBuilder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
             webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
         }
         public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)

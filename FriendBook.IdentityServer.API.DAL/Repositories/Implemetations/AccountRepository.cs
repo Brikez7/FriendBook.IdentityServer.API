@@ -1,5 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
 {
@@ -10,6 +11,20 @@ namespace FriendBook.IdentityServer.API.DAL.Repositories.Implemetations
         public AccountRepository(IdentityContext db)
         {
             _db = db;
+        }
+
+        public bool ClearContact(Expression<Func<Account, bool>> expressionWhere)
+        {
+            var contact = _db.Accounts.Where(expressionWhere).Single();
+
+            contact.Info = null;
+            contact.FullName = null;
+            contact.Telephone = null;
+            contact.Email = null;
+            contact.Company = null;
+            contact.Profession = null;
+
+            return true;
         }
 
         public async Task<Account> AddAsync(Account entity)

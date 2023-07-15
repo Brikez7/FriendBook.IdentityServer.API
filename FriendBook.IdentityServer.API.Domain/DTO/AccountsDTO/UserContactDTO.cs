@@ -6,14 +6,14 @@ namespace FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO
     {
         public string? FullName { get; set; }
         public string? Email { get; set; }
-        public string? Login { get; set; }
+        public string Login { get; set; }
         public string? Info { get; set; }
         public string? Profession { get; set; }
         public string? Telephone { get; set; }
 
         public UserContactDTO() { }
 
-        public UserContactDTO(string? fullName, string? email, string? login, string? info, string? profession, string? telephone)
+        public UserContactDTO(string? fullName, string? email, string login, string? info, string? profession, string? telephone)
         {
             FullName = fullName;
             Email = email;

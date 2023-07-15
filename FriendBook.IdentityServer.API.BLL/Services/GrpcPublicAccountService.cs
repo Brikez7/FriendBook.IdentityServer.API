@@ -7,12 +7,12 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 {
     public class GrpcPublicAccountService : PublicAccount.PublicAccountBase
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserAccountService _userAccountService;
         private readonly ILogger<GrpcPublicAccountService> _logger;
 
-        public GrpcPublicAccountService(IAccountService accountService, ILogger<GrpcPublicAccountService> logger)
+        public GrpcPublicAccountService(IUserAccountService accountService, ILogger<GrpcPublicAccountService> logger)
         {
-            _accountService = accountService;
+            _userAccountService = accountService;
             _logger = logger;
         }
 
@@ -22,14 +22,14 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             ResponseUserExists userExists = new ResponseUserExists();
             if (Guid.TryParse(accountIdString, out Guid accountId))
             {
-                var response = await _accountService.AccountExists(x => x.Id == accountId);
+                var response = await _userAccountService.AccountExists(x => x.Id == accountId);
                 userExists.Exists = response.Data;
             }
             return userExists;
         }
         public override async Task<ResponseUsers> GetUsersLoginWithId(RequestUsersId request, ServerCallContext context)
         {
-            var responseLoginsWithId = await _accountService.GetLogins(request.UserId.Select(Guid.Parse).ToArray());
+            var responseLoginsWithId = await _userAccountService.GetLogins(request.UserId.Select(Guid.Parse).ToArray());
             ResponseUsers responseUsers = new ResponseUsers();
 
             if (responseLoginsWithId.Message is not null)

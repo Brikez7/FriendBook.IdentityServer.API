@@ -12,16 +12,16 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 {
     public class ContactService : IContactService
     {
-        private readonly IContactRepository _contactRepository;
-        protected readonly ILogger<IAccountService> _logger;
-        public ContactService(IContactRepository repository, ILogger<IAccountService> logger)
+        private readonly IAccountRepository _accountRepository;
+        protected readonly ILogger<IUserAccountService> _logger;
+        public ContactService(IAccountRepository repository, ILogger<IUserAccountService> logger)
         {
-            _contactRepository = repository;
+            _accountRepository = repository;
             _logger = logger;
         }
         public async Task<BaseResponse<bool>> ClearContact(Expression<Func<Account, bool>> expression)
         {
-            var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
+            var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
             if (entity == null)
             {
                 return new StandartResponse<bool>()
@@ -30,8 +30,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                     StatusCode = StatusCode.EntityNotFound
                 };
             }
-            var accountIsDelete = _contactRepository.Clear(entity);
-            await _contactRepository.SaveAsync();
+            var accountIsDelete = _accountRepository.ClearContact(e => e.Id == entity.Id);
+            await _accountRepository.SaveAsync();
             return new StandartResponse<bool>()
             {
                 Data = accountIsDelete,
@@ -41,7 +41,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<ResponseProfile[]>> GetProfiles(string login, Guid userId)
         {
-            var entities = await _contactRepository.GetAll()
+            var entities = await _accountRepository.GetAll()
                                                    .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
                                                    .Select(x => new ResponseProfile((Guid)x.Id!, x.Login, x.FullName))
                                                    .ToListAsync();
@@ -68,7 +68,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<UserContactDTO>> GetContact(Expression<Func<Account, bool>> expression)
         {
-            var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
+            var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
             if (entity == null)
             {
                 return new StandartResponse<UserContactDTO>()
@@ -86,7 +86,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login, Guid idUser)
         {
-            var userId = await _contactRepository.GetAll()
+            var userId = await _accountRepository.GetAll()
                                                  .Select(x => new { x.Id,x.Login})
                                                  .SingleOrDefaultAsync(x => x.Login == contactDTO.Login);
 
@@ -100,7 +100,15 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             }
 
             var account = new Account(contactDTO, idUser);
-            var updatedAccount = _contactRepository.Update(account);
+
+            account.Info = contactDTO.Info;
+            account.FullName = contactDTO.FullName;
+            account.Telephone = contactDTO.Telephone;
+            account.Email = contactDTO.Email;
+            account.Login = contactDTO.Login;
+            account.Profession = contactDTO.Profession;
+
+            var updatedAccount = _accountRepository.Update(account);
 
             if (updatedAccount is null) 
             {
@@ -111,7 +119,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 };
             }
 
-            await _contactRepository.SaveAsync();
+            await _accountRepository.SaveAsync();
 
             return new StandartResponse<UserContactDTO>()
             {

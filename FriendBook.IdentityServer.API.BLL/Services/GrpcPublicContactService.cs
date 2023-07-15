@@ -1,4 +1,5 @@
 ﻿using FriendBook.IdentityServer.API.BLL.gRPCClients.ContactService;
+using FriendBook.IdentityServer.API.BLL.Helpers;
 using FriendBook.IdentityServer.API.BLL.Interfaces;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
@@ -11,17 +12,15 @@ namespace FriendBook.IdentityServer.API.BLL.Services
     {
         private readonly IContactService _contactService;
         private readonly ILogger<GrpcPublicContactService> _logger;
-        private readonly IAccessTokenService _accessTokenService;
-        public GrpcPublicContactService(IContactService contactService, ILogger<GrpcPublicContactService> logger, IAccessTokenService accessTokenService)
+        public GrpcPublicContactService(IContactService contactService, ILogger<GrpcPublicContactService> logger)
         {
             _contactService = contactService;
             _logger = logger;
-            _accessTokenService = accessTokenService;
         }
         [Authorize]
         public override async Task<ResponseProfiles> GetProfiles(RequestUserLogin request, ServerCallContext context)
         {
-            var User = _accessTokenService.CreateUser((context.GetHttpContext().User.Identity as ClaimsIdentity).Claims).Value;
+            var User = AccessTokenHelper.CreateUserToken((context.GetHttpContext().User.Identity as ClaimsIdentity).Claims);
 
             var responseLocalPropfile = await _contactService.GetProfiles(request.Login, User.Id);
 

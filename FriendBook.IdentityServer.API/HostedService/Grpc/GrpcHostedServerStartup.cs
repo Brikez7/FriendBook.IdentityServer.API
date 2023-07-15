@@ -29,16 +29,13 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
                 options.EnableDetailedErrors = true;
             });
 
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IAccountRepository, AccountRepository>();
 
             services.AddScoped<IContactService, ContactService>();
-            services.AddScoped<IContactRepository, ContactRepository>();
 
             services.AddDbContext<IdentityContext>(opt => opt.UseNpgsql(
                 _configuration.GetConnectionString(IdentityContext.NameConnection)));
-
-            services.AddScoped<IAccessTokenService, AccessTokenService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

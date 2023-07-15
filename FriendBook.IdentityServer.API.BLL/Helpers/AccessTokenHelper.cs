@@ -1,30 +1,30 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain;
+﻿using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.UserToken;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Helpers
 {
-    public class AccessTokenService : IAccessTokenService
+    public static class AccessTokenHelper
     {
-        public AccessTokenService()
-        {
-        }
-
-        public Lazy<TokenAuth> CreateUser(IEnumerable<Claim> claims)
+        public static Lazy<TokenAuth> CreateUser(IEnumerable<Claim> claims)
         {
             return new Lazy<TokenAuth>(() => CreateUserToken(claims));
         }
-        private static TokenAuth CreateUserToken(IEnumerable<Claim> claims)
+        public static TokenAuth CreateUserToken(IEnumerable<Claim> claims)
         {
             var login = claims.First(c => c.Type == CustomClaimType.Login).Value;
             var id = Guid.Parse(claims.First(c => c.Type == CustomClaimType.AccountId).Value);
 
             return new TokenAuth(login, id);
         }
-        public BaseResponse<TokenAuth?> CreateUserTokenTryEmpty(IEnumerable<Claim> claims)
+        public static BaseResponse<TokenAuth?> CreateUserTokenTryEmpty(IEnumerable<Claim> claims)
         {
             var login = claims.FirstOrDefault(c => c.Type == CustomClaimType.Login)?.Value;
             var stringId = claims.FirstOrDefault(c => c.Type == CustomClaimType.AccountId)?.Value;
