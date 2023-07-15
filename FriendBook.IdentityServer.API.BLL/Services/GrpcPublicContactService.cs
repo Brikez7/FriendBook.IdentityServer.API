@@ -23,7 +23,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         {
             var User = _accessTokenService.CreateUser((context.GetHttpContext().User.Identity as ClaimsIdentity).Claims).Value;
 
-            var responseLocalPropfile = await _contactService.GetAllProphile(request.Login, User.Id);
+            var responseLocalPropfile = await _contactService.GetProfiles(request.Login, User.Id);
 
             if (responseLocalPropfile.Message is not null) 
             {

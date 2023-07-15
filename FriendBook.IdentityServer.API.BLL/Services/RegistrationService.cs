@@ -46,13 +46,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 return new StandartResponse<ResponseAuthenticated>()
                 {
                     Data = authToken,
-                    StatusCode = StatusCode.AccountRegistered
+                    StatusCode = StatusCode.UserRegistered
                 };
             }
             return new StandartResponse<ResponseAuthenticated>()
             {
                 Message = "Account with login already exists",
-                StatusCode = StatusCode.AccountAlreadyExists
+                StatusCode = StatusCode.UserAlreadyExists
             };
         }
 
@@ -72,7 +72,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return new StandartResponse<ResponseAuthenticated>()
             {
                 Data = _tokenService.GenerateAuthenticatedToken(new TokenAuth(account.Login,(Guid)account.Id!)).Data,
-                StatusCode = StatusCode.AccountAuthenticated
+                StatusCode = StatusCode.UserAuthenticated
             };
         }
 
@@ -87,7 +87,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 if (secretNumberResponse.StatusCode == StatusCode.RedisReceive && secretNumberResponse.Data == userSecretNumber) 
                 {
                     var newAccessToken = _tokenService.GenerateAccessToken(tokenAuth);
-                    return new StandartResponse<string> {Data = newAccessToken, StatusCode = StatusCode.AccountAuthenticatedByRT };
+                    return new StandartResponse<string> {Data = newAccessToken, StatusCode = StatusCode.UserAuthenticatedByRT };
                 }
                 return new StandartResponse<string> { Message = "Secret number not found please go to authorization", StatusCode = StatusCode.ErrorAuthenticate };
             }

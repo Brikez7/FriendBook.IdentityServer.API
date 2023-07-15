@@ -6,15 +6,12 @@ namespace FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators
 {
     public class ValidatorUserContactDTO : AbstractValidator<UserContactDTO>
     {
-        private static readonly PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.GetInstance();
         private bool IsValidPhoneNumber(string? phoneNumber)
         {
             if (string.IsNullOrEmpty(phoneNumber))
                 return true;
 
-            var phoneNumberObject = phoneNumberUtil.Parse(phoneNumber, null);
-
-            return phoneNumberUtil.IsValidNumber(phoneNumberObject);
+            return PhoneNumberUtil.IsViablePhoneNumber(phoneNumber);
         }
         public ValidatorUserContactDTO()
         {

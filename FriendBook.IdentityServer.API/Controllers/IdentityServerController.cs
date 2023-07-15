@@ -59,7 +59,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(new StandartResponse<bool>
             {
                 Data = true,
-                StatusCode = Domain.StatusCode.AccessTokenValid
+                StatusCode = Domain.StatusCode.TokenValid
             });
         }
     }

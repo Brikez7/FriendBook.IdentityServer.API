@@ -8,7 +8,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories
 {
     internal static class TokenHelpers
     {
-        public static TokenAuth? CreateTokenAuth(string? token, string Issuer, string Audience, string secretKey)
+        public static TokenAuth? GetDataTokenAuth(string? token, string Issuer, string Audience, string secretKey)
         {
             if(token is null)
                 throw new ArgumentNullException(nameof(token));

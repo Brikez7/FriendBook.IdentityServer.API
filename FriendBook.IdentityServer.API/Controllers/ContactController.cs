@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
+    [ApiController]
     [Route("api/v1/[controller]")]
     [Authorize]
     public class ContactController : ControllerBase
@@ -44,7 +45,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         [HttpGet("GetProfiles/{login?}")]
         public async Task<IActionResult> GetProfiles([FromRoute] string login = "")
         {
-            var response = await _contactService.GetAllProphile(login, UserToken.Value.Id);
+            var response = await _contactService.GetProfiles(login, UserToken.Value.Id);
             return Ok(response);
         }
     }

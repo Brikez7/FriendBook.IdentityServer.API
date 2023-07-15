@@ -39,26 +39,28 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<ResponseProfile[]>> GetAllProphile(string login, Guid id)
+        public async Task<BaseResponse<ResponseProfile[]>> GetProfiles(string login, Guid userId)
         {
             var entities = await _contactRepository.GetAll()
-                                                   .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%") && x.Id != id)
+                                                   .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
                                                    .Select(x => new ResponseProfile((Guid)x.Id!, x.Login, x.FullName))
                                                    .ToListAsync();
 
+            var account = entities.FirstOrDefault(x => x.Id == userId);
+            if (account is not null)
+                entities.Remove(account);
 
-            if (entities.Count > 0)
+            if (entities.Count > 0 )
             {
                 return new StandartResponse<ResponseProfile[]>()
                 {
                     Data = entities.ToArray(),
-                    StatusCode = StatusCode.AccountRead
+                    StatusCode = StatusCode.ContactRead
                 };
             }
             return new StandartResponse<ResponseProfile[]>()
             {
-
-                Message = "Prophiles not found",
+                Message = "Profiles not found",
                 StatusCode = StatusCode.EntityNotFound
             };
         }
@@ -78,7 +80,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return new StandartResponse<UserContactDTO>()
             {
                 Data = new UserContactDTO(entity),
-                StatusCode = StatusCode.AccountRead
+                StatusCode = StatusCode.ContactRead
             };
         }
 
@@ -88,12 +90,12 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                                                  .Select(x => new { x.Id,x.Login})
                                                  .SingleOrDefaultAsync(x => x.Login == contactDTO.Login);
 
-            if (userId is null && userId?.Id != idUser)  
+            if (userId is not null && userId?.Id != idUser)  
             {
                 return new StandartResponse<UserContactDTO>()
                 {
                     Message = "an account with username already exists",
-                    StatusCode = StatusCode.AccountAlreadyExists,
+                    StatusCode = StatusCode.UserAlreadyExists,
                 };
             }
 
@@ -114,7 +116,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return new StandartResponse<UserContactDTO>()
             {
                 Data = new UserContactDTO(updatedAccount),
-                StatusCode = StatusCode.AccountUpdate,
+                StatusCode = StatusCode.ContactUpdate,
             };
         }
     }
