@@ -17,7 +17,7 @@ namespace FriendBook.IdentityServer.API
 {
     public static class DIManager
     {
-        public static void AddRepositores(this WebApplicationBuilder webApplicationBuilder)
+        public static void AddRepositories(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IAccountRepository, AccountRepository>();
             webApplicationBuilder.Services.AddScoped<IContactRepository, ContactRepository>();

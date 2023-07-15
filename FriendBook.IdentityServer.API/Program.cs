@@ -12,7 +12,7 @@ namespace FriendBook.IdentityServer.API
 
             builder.Services.AddSingleton(builder.Configuration);
 
-            builder.AddRepositores();
+            builder.AddRepositories();
             builder.AddServices();
             builder.AddValidators();
 

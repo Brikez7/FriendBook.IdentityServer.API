@@ -1,10 +1,8 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
-using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.Settings;
-using FriendBook.IdentityServer.API.Domain.Settings.JWT;
 using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -57,7 +55,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             var jwtToken = GenerateToken(_JWTSettings.RefreshTokenSecretKey, _JWTSettings.Issuer, _JWTSettings.Audience, _JWTSettings.RefreshTokenExpirationMinutes, claims);
 
             _ = _redisLockService.SetSecretNumber(SecretNumber,"Token:" + account.Id.ToString());
-            
+
             return jwtToken;
         }
 
@@ -90,7 +88,6 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 ValidateLifetime = true,
                 IssuerSigningKey = signingKey,
                 ValidateIssuerSigningKey = true,
-                LifetimeValidator = JwtHelper.CustomLifeTimeValidator
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;

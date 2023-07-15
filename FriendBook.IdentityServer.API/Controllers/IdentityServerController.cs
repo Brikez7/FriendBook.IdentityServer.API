@@ -34,10 +34,10 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("AuthenticateByRefreshToken")]
-        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] TokenAuth accessToken,[FromQuery] string refreshToken)
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] TokenAuth accessTokenData,[FromQuery] string refreshToken)
         {
-            var responseAuthenicated = await _registrationService.GetAccessToken(accessToken, refreshToken);
-            return Ok(responseAuthenicated);
+            var responseAuthenticated = await _registrationService.GetAccessToken(accessTokenData, refreshToken);
+            return Ok(responseAuthenticated);
         }
 
         [HttpPost("Registration")]
@@ -59,7 +59,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(new StandartResponse<bool>
             {
                 Data = true,
-                StatusCode = Domain.StatusCode.OK
+                StatusCode = Domain.StatusCode.AccessTokenValid
             });
         }
     }

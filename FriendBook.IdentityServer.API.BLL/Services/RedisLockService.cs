@@ -30,7 +30,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             await using var redLock = await redLockFactory.CreateLockAsync(_redisSetting.Resource, _redisSetting.Expiry, _redisSetting.Wait, _redisSetting.Retry);
             if (redLock.IsAcquired)
             {
-                var secretNumber = await _dispributedCache.GetStringAsync(key);
+                var secretNumber = await _dispributedCache.GetStringAsync( key);
 
                 if (secretNumber != null)
                 {

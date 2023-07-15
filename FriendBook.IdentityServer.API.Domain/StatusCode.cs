@@ -8,20 +8,20 @@
         AccountUpdate = 202,
         AccountDelete = 203,
         AccountRead = 204,
-        AccountAuthenticate = 205,
-        AccountAuthenticateByRT = 206,
-        AccountAlraedyExists = 207,
+
+        AccountAuthenticated = 205,
+        AccountAuthenticatedByRT = 206,
+        AccountAlreadyExists = 207,
+        AccountRegistered = 208,
 
         ContactClear = 211,
 
         OK = 200,
 
-
-        
         TokenNotValid = 31,
         TokenRead = 32,
         TokenGenerate = 33,
-
+        AccessTokenValid = 34,
 
         RedisLock = 41,
         RedisEmpty = 42,

@@ -1,9 +1,7 @@
 ﻿using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
-using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.UserToken;
-using System.Security.Claims;
 
 namespace FriendBook.IdentityServer.API.BLL.Interfaces
 {
@@ -11,6 +9,6 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
     {
         public Task<BaseResponse<ResponseAuthenticated>> Registration(RequestAccount DTO);
         public Task<BaseResponse<ResponseAuthenticated>> Authenticate(RequestAccount DTO);
-        public Task<BaseResponse<string?>> GetAccessToken(TokenAuth tokenAuth, string refreshToken);
+        public Task<BaseResponse<string>> GetAccessToken(TokenAuth tokenAuth, string refreshToken);
     }
 }

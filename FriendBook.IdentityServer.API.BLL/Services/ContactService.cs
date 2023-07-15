@@ -93,7 +93,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 return new StandartResponse<UserContactDTO>()
                 {
                     Message = "an account with username already exists",
-                    StatusCode = StatusCode.AccountAlraedyExists,
+                    StatusCode = StatusCode.AccountAlreadyExists,
                 };
             }
 
