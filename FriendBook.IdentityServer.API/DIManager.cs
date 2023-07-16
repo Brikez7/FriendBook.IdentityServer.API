@@ -35,7 +35,6 @@ namespace FriendBook.IdentityServer.API
             webApplicationBuilder.Services.AddScoped<IRegistrationService, RegistrationService>();
             webApplicationBuilder.Services.AddScoped<IContactService, ContactService>();
             webApplicationBuilder.Services.AddScoped<ITokenService, TokenService>();
-            webApplicationBuilder.Services.AddScoped<IPasswordService, PasswordService>();
             webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
         }
         public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)

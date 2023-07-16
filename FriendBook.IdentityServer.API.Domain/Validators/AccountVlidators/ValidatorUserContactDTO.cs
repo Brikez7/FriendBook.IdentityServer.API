@@ -25,11 +25,6 @@ namespace FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators
                 .EmailAddress().WithMessage("Email is not in a valid format.")
                 .When(dto => !string.IsNullOrEmpty(dto.Email));
 
-            RuleFor(dto => dto.Login)
-                .NotEmpty().WithMessage("Login is required")
-                .Matches(@"^[a-zA-Z0-9]+$").WithMessage("Login must contain only letters and numbers")
-                .Length(2, 50).WithMessage("Login must not exceed 50 characters and at least 2 characters.");
-
             RuleFor(dto => dto.Info)
                 .Length(0,100).WithMessage("Info must not exceed 500 characters and at least 2 characters.");
 

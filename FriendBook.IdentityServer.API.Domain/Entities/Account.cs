@@ -36,7 +36,6 @@ namespace FriendBook.IdentityServer.API.Domain.Entities
         {
             FullName = userContactDTO.FullName;
             Email = userContactDTO.Email;
-            Login = userContactDTO.Login;
             Info = userContactDTO.Info;
             Profession = userContactDTO.Profession;
             Telephone = userContactDTO.Telephone;

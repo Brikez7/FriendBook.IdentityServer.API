@@ -15,11 +15,12 @@
         ContactRead = 214,
         ContactClear = 215,
 
-        UserAuthenticated = 205,
-        UserAuthenticatedByRT = 206,
-        UserAlreadyExists = 207,
-        UserRegistered = 208,
-        UserNotAuthenticate = 209,
+        UserAuthenticated = 221,
+        UserAuthenticatedByRT = 222,
+        UserAlreadyExists = 223,
+        UserRegistered = 224,
+        UserNotAuthenticate = 225,
+        UserNotExists = 226,
 
         OK = 200,
 

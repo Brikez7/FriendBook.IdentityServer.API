@@ -23,7 +23,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         private readonly IRedisLockService _redisLockService;
         private readonly IAccountRepository _accountRepository;
         private readonly JWTSettings _jwtSettings;
-        public RegistrationService(ILogger<RegistrationService> logger, IUserAccountService accountService, ITokenService tokenService, IOptions<JWTSettings> jwtOptions,
+        public RegistrationService(ILogger<RegistrationService> logger, IAccountRepository accountRepository, IUserAccountService accountService, ITokenService tokenService, IOptions<JWTSettings> jwtOptions,
             IRedisLockService redisLockService)
         {
             _logger = logger;
@@ -31,6 +31,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             _tokenService = tokenService;
             _jwtSettings = jwtOptions.Value;
             _redisLockService = redisLockService;
+            _accountRepository = accountRepository;
         }
         public async Task<BaseResponse<ResponseAuthenticated>> Registration(RequestAccount accountDTO)
         {

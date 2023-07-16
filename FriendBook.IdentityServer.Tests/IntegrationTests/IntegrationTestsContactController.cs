@@ -114,7 +114,6 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
                 Email = "test@gmail.com",
                 FullName = "Pasha Dubkovski",
                 Info = "I Work in Microsoft",
-                Login = "TestLogin",
                 Profession = ".NET Developer",
                 Telephone = "375 (29) 231 91 83" 
             };

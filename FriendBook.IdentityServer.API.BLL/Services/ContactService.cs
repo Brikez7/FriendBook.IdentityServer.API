@@ -86,31 +86,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login, Guid idUser)
         {
-            var userId = await _accountRepository.GetAll()
-                                                 .Select(x => new { x.Id,x.Login})
-                                                 .SingleOrDefaultAsync(x => x.Login == contactDTO.Login);
+            var existsAccount = await _accountRepository.GetAll()
+                                                        .SingleOrDefaultAsync(x => x.Id == idUser);
 
-            if (userId is not null && userId?.Id != idUser)  
-            {
-                return new StandartResponse<UserContactDTO>()
-                {
-                    Message = "an account with username already exists",
-                    StatusCode = StatusCode.UserAlreadyExists,
-                };
-            }
-
-            var account = new Account(contactDTO, idUser);
-
-            account.Info = contactDTO.Info;
-            account.FullName = contactDTO.FullName;
-            account.Telephone = contactDTO.Telephone;
-            account.Email = contactDTO.Email;
-            account.Login = contactDTO.Login;
-            account.Profession = contactDTO.Profession;
-
-            var updatedAccount = _accountRepository.Update(account);
-
-            if (updatedAccount is null) 
+            if (existsAccount is null)  
             {
                 return new StandartResponse<UserContactDTO>()
                 {
@@ -119,11 +98,19 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 };
             }
 
-            await _accountRepository.SaveAsync();
+            var account = new Account(contactDTO, idUser);
 
+            existsAccount.Info = contactDTO.Info;
+            existsAccount.FullName = contactDTO.FullName;
+            existsAccount.Telephone = contactDTO.Telephone;
+            existsAccount.Email = contactDTO.Email;
+            existsAccount.Profession = contactDTO.Profession;
+
+            await _accountRepository.SaveAsync();
+            
             return new StandartResponse<UserContactDTO>()
             {
-                Data = new UserContactDTO(updatedAccount),
+                Data = new UserContactDTO(existsAccount),
                 StatusCode = StatusCode.ContactUpdate,
             };
         }

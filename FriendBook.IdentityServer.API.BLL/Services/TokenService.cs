@@ -16,12 +16,10 @@ namespace FriendBook.IdentityServer.API.BLL.Services
     public class TokenService : ITokenService
     {
         private readonly JWTSettings _JWTSettings;
-        private readonly IRedisLockService _redisLockService;
 
-        public TokenService(IOptions<JWTSettings> optionJWTSettings, IRedisLockService redisLockService)
+        public TokenService(IOptions<JWTSettings> optionJWTSettings)
         {
             _JWTSettings = optionJWTSettings.Value;
-            _redisLockService = redisLockService;
         }
 
         public string GenerateAccessToken(DataAccessToken account)
