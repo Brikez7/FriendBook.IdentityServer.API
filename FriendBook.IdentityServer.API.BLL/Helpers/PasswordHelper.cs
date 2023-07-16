@@ -1,13 +1,11 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Helpers
 {
-    public class PasswordService : IPasswordService
+    public static class PasswordHelper
     {
-        public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -16,7 +14,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             }
         }
 
-        public bool VerifyPasswordHash(string Password, byte[] passwordHash, byte[] passwordSalt)
+        public static bool VerifyPasswordHash(string Password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {

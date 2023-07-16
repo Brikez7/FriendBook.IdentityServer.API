@@ -1,4 +1,5 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BLL.Helpers;
+using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain;
@@ -19,17 +20,15 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         protected readonly ILogger<RegistrationService> _logger;
         private readonly IUserAccountService _userAccountService;
         private readonly ITokenService _tokenService;
-        private readonly IPasswordService _passwordService;
         private readonly IRedisLockService _redisLockService;
         private readonly IAccountRepository _accountRepository;
         private readonly JWTSettings _jwtSettings;
-        public RegistrationService(ILogger<RegistrationService> logger, IUserAccountService accountService, ITokenService tokenService, IPasswordService passwordService, IOptions<JWTSettings> jwtOptions,
+        public RegistrationService(ILogger<RegistrationService> logger, IUserAccountService accountService, ITokenService tokenService, IOptions<JWTSettings> jwtOptions,
             IRedisLockService redisLockService)
         {
             _logger = logger;
             _userAccountService = accountService;
             _tokenService = tokenService;
-            _passwordService = passwordService;
             _jwtSettings = jwtOptions.Value;
             _redisLockService = redisLockService;
         }
@@ -38,7 +37,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             var responseAccount = await _userAccountService.GetAccount(x => x.Login == accountDTO.Login);
             if (responseAccount.StatusCode == StatusCode.EntityNotFound)
             {
-                _passwordService.CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                PasswordHelper.CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 var newAccount = new Account(accountDTO, Convert.ToBase64String(passwordSalt), Convert.ToBase64String(passwordHash));
 
@@ -63,7 +62,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         {
             var account = (await _userAccountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
             if (account == null ||
-                !_passwordService.VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
+                !PasswordHelper.VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
             {
                 return new StandartResponse<ResponseAuthenticated>()
                 {
