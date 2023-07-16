@@ -7,10 +7,11 @@ using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using FriendBook.IdentityServer.API.Domain.Validators.AccountVlidators;
 using FriendBook.IdentityServer.API.HostedService;
-using FriendBook.IdentityServer.API.HostedService.Grpc;
 using FriendBook.IdentityServer.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Text;
 
 namespace FriendBook.IdentityServer.API
@@ -82,10 +83,23 @@ namespace FriendBook.IdentityServer.API
         }
         public static void AddHostedServices(this WebApplicationBuilder webApplicationBuilder)
         {
+            webApplicationBuilder.Services.AddHostedService<CheckDBHostedService>();
+        }
+        public static void AddGrpcServices(this WebApplicationBuilder webApplicationBuilder)
+        {
             webApplicationBuilder.Services.Configure<GrpcSettings>(webApplicationBuilder.Configuration.GetSection(GrpcSettings.Name));
 
-            webApplicationBuilder.Services.AddHostedService<CheckDBHostedService>();
-            webApplicationBuilder.Services.AddHostedService<GrpcEndpointListenHostService>();
+            var grpcSettings = webApplicationBuilder.Configuration.GetSection(GrpcSettings.Name).Get<GrpcSettings>() ??
+                throw new InvalidOperationException($"{GrpcSettings.Name} not found in appsettings.json");
+
+            webApplicationBuilder.WebHost.ConfigureKestrel(options =>
+            {
+                options.Listen(IPAddress.Any, grpcSettings.IdentityGrpcHost, listenOptions =>
+                {
+                    listenOptions.Protocols = HttpProtocols.Http2;
+                });
+            })
+            .UseKestrel();
         }
         public static void AddMiddleware(this WebApplication webApplication)
         {
