@@ -72,16 +72,16 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
 
             HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{UrlController}/Registration", requestAccountContent);
-            BaseResponse<ResponseAuthenticated> custResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error when parsing JSON: response auth");
+            BaseResponse<ResponseAuthenticated> customResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())
+                ?? throw new JsonException("Error when parsing JSON: responseAuth");
 
             Assert.Multiple(() =>
             {
                 Assert.That(responseAuth.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(custResponseAuth.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAlreadyExists));
-                Assert.IsNull(custResponseAuth?.Data?.RefreshToken);
-                Assert.IsNull(custResponseAuth?.Data?.AccessToken);
+                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAlreadyExists));
+                Assert.IsNull(customResponseAuth?.Data?.RefreshToken);
+                Assert.IsNull(customResponseAuth?.Data?.AccessToken);
             });
         }
 
@@ -92,7 +92,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
 
             HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{UrlController}/Authenticate", requestAccountContent);
             BaseResponse<ResponseAuthenticated> customResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error when parsing JSON: response auth");
+                ?? throw new JsonException("Error when parsing JSON: responseAuth");
 
             Assert.Multiple(() =>
             {
@@ -110,28 +110,28 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
 
             HttpResponseMessage responseAT = await _httpClient.PostAsync($"{UrlController}/AuthenticateByRefreshToken?refreshToken={_responseRegistries.RefreshToken}", requestTokenAuth);
 
-            BaseResponse<string> custResponseAT = JsonConvert.DeserializeObject<StandartResponse<string>>(await responseAT.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error when parsing JSON: response auth");
+            BaseResponse<string> customResponseAT = JsonConvert.DeserializeObject<StandartResponse<string>>(await responseAT.Content.ReadAsStringAsync())
+                ?? throw new JsonException("Error when parsing JSON: customResponseAT");
 
             Assert.Multiple(() =>
             {
                 Assert.That(responseAT.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(custResponseAT.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAuthenticatedByRT));
-                Assert.That(custResponseAT?.Data, Is.Not.Null);
+                Assert.That(customResponseAT.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAuthenticatedByRT));
+                Assert.That(customResponseAT?.Data, Is.Not.Null);
             });
         }
         [Test]
         public async Task TestCheckToken()
         {
-            HttpResponseMessage responseCheckToken = await _httpClient.GetAsync($"{UrlController}/CheckToken");
-            BaseResponse<bool> custResponseCheckToken = JsonConvert.DeserializeObject<StandartResponse<bool>>(await responseCheckToken.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error when parsing JSON: response auth");
+            HttpResponseMessage responseTokenValid = await _httpClient.GetAsync($"{UrlController}/CheckToken");
+            BaseResponse<bool> customResponseTokenValid = JsonConvert.DeserializeObject<StandartResponse<bool>>(await responseTokenValid.Content.ReadAsStringAsync())
+                ?? throw new JsonException("Error when parsing JSON: customResponseTokenValid");
 
             Assert.Multiple(() =>
             {
-                Assert.That(responseCheckToken.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(custResponseCheckToken.StatusCode, Is.EqualTo(API.Domain.StatusCode.TokenValid));
-                Assert.That(custResponseCheckToken?.Data, Is.EqualTo(true));
+                Assert.That(responseTokenValid.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(customResponseTokenValid.StatusCode, Is.EqualTo(API.Domain.StatusCode.TokenValid));
+                Assert.That(customResponseTokenValid?.Data, Is.EqualTo(true));
             });
         }
     }
