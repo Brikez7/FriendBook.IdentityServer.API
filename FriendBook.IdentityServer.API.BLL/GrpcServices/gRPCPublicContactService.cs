@@ -24,14 +24,14 @@ namespace FriendBook.IdentityServer.API.BLL.GrpcServices
 
             var responseLocalPropfile = await _contactService.GetProfiles(request.Login, User.Id);
 
+            ResponseProfiles responseProfiles = new ResponseProfiles();
             if (responseLocalPropfile.Message is not null)
             {
-                return null;
+                return responseProfiles;
             }
             var r = responseLocalPropfile.Data.ToArray();
             var profiles = r.Select(x => new Profile() { FullName = x.FullName ?? "", Login = x.Login.ToString(), Id = x.Id.ToString() });
 
-            var responseProfiles = new ResponseProfiles() { };
             responseProfiles.Profiles.AddRange(profiles);
             return responseProfiles;
         }
