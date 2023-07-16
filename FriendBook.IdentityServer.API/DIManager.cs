@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.BLL.Services;
+using FriendBook.IdentityServer.API.BLL.Services.Implementations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
@@ -17,10 +17,9 @@ namespace FriendBook.IdentityServer.API
 {
     public static class DIManager
     {
-        public static void AddRepositores(this WebApplicationBuilder webApplicationBuilder)
+        public static void AddRepositories(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.AddScoped<IAccountRepository, AccountRepository>();
-            webApplicationBuilder.Services.AddScoped<IContactRepository, ContactRepository>();
         }
         public static void AddValidators(this WebApplicationBuilder webApplicationBuilder)
         {
@@ -32,18 +31,16 @@ namespace FriendBook.IdentityServer.API
         }
         public static void AddServices(this WebApplicationBuilder webApplicationBuilder)
         {
-            webApplicationBuilder.Services.AddScoped<IAccountService, AccountService>();
+            webApplicationBuilder.Services.AddScoped<IUserAccountService, UserAccountService>();
             webApplicationBuilder.Services.AddScoped<IRegistrationService, RegistrationService>();
             webApplicationBuilder.Services.AddScoped<IContactService, ContactService>();
             webApplicationBuilder.Services.AddScoped<ITokenService, TokenService>();
-            webApplicationBuilder.Services.AddScoped<IPasswordService, PasswordService>();
-            webApplicationBuilder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
             webApplicationBuilder.Services.AddScoped<IRedisLockService, RedisLockService>();
         }
         public static void AddRedisPropperty(this WebApplicationBuilder webApplicationBuilder)
         {
             var redisSettings = webApplicationBuilder.Configuration.GetSection(RedisSettings.Name).Get<RedisSettings>() ??
-                throw new InvalidOperationException($"{RedisSettings.Name} not found in sercret.json");
+                throw new InvalidOperationException($"{RedisSettings.Name} not found in appsettings.json");
 
             webApplicationBuilder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -58,7 +55,7 @@ namespace FriendBook.IdentityServer.API
             webApplicationBuilder.Services.Configure<JWTSettings>(webApplicationBuilder.Configuration.GetSection(JWTSettings.Name));
 
             var jwtSettings = webApplicationBuilder.Configuration.GetSection(JWTSettings.Name).Get<JWTSettings>() ??
-                throw new InvalidOperationException($"{JWTSettings.Name} not found in sercret.json");
+                throw new InvalidOperationException($"{JWTSettings.Name} not found in appsettings.json");
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.AccessTokenSecretKey!));
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FriendBook.IdentityServer.API
 {
-    public class Program
+    public partial class Program
     {
         public static void Main(string[] args)
         {
@@ -12,10 +12,12 @@ namespace FriendBook.IdentityServer.API
 
             builder.Services.AddSingleton(builder.Configuration);
 
-            builder.AddRepositores();
-            builder.AddAuthProperty();
+            builder.AddRepositories();
             builder.AddServices();
             builder.AddValidators();
+
+            builder.AddAuthProperty();
+
             builder.AddRedisPropperty();
 
             builder.Services.AddDbContext<IdentityContext>(opt => opt.UseNpgsql(
@@ -29,7 +31,6 @@ namespace FriendBook.IdentityServer.API
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
-
 
             if (app.Environment.IsDevelopment())
             {

@@ -5,19 +5,23 @@ using System.Net;
 
 namespace FriendBook.IdentityServer.API.HostedService.Grpc
 {
-    public class GrpcEndpointListenHostService : BackgroundService
+    public class GrpcEndpointListenHostService : IHostedService
     {
         private readonly GrpcSettings _grpcSettings;
+        private readonly IConfiguration _configuration;
+        private IHost? _host;
 
-        public GrpcEndpointListenHostService(IOptions<GrpcSettings> grpcSettings)
+        public GrpcEndpointListenHostService(IOptions<GrpcSettings> grpcSettings, IConfiguration configuration)
         {
             _grpcSettings = grpcSettings.Value;
+            _configuration = configuration;
         }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(builder =>
+            var builder = Host.CreateDefaultBuilder();
+            builder.ConfigureAppConfiguration((config) => config.AddConfiguration(_configuration));
+
+            _host = builder.ConfigureWebHostDefaults(builder =>
             {
                 builder.ConfigureKestrel(options =>
                 {
@@ -29,8 +33,19 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
                 .UseKestrel()
                 .UseStartup<GrpcHostedServerStartup>();
             })
-            .Build()
-            .StartAsync(stoppingToken);
+            .Build();
+
+            await _host.StartAsync(cancellationToken);
+        }
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            if (_host != null)
+            {
+                using var cts = new CancellationTokenSource();
+                await _host.StopAsync(cts.Token);
+            }
         }
     }
 }
+
+

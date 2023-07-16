@@ -1,11 +1,11 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.UserToken
+﻿namespace FriendBook.IdentityServer.API.Domain.JWT
 {
-    public class TokenAuth
+    public class DataAccessToken
     {
         public string Login { get; set; }
         public Guid Id { get; set; }
 
-        public TokenAuth(string login, Guid id)
+        public DataAccessToken(string login, Guid id)
         {
             Login = login;
             Id = id;

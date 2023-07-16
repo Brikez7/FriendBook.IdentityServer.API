@@ -8,20 +8,26 @@
         AccountUpdate = 202,
         AccountDelete = 203,
         AccountRead = 204,
-        AccountAuthenticate = 205,
-        AccountAuthenticateByRT = 206,
-        AccountAlraedyExists = 207,
 
-        ContactClear = 211,
+        ContactCreate = 211,
+        ContactUpdate = 212,
+        ContactDelete = 213,
+        ContactRead = 214,
+        ContactClear = 215,
+
+        UserAuthenticated = 221,
+        UserAuthenticatedByRT = 222,
+        UserAlreadyExists = 223,
+        UserRegistered = 224,
+        UserNotAuthenticate = 225,
+        UserNotExists = 226,
 
         OK = 200,
 
-
-        
         TokenNotValid = 31,
         TokenRead = 32,
         TokenGenerate = 33,
-
+        TokenValid = 34,
 
         RedisLock = 41,
         RedisEmpty = 42,
@@ -34,7 +40,6 @@
         ErrorAuthenticate = 301,
         ErrorRegistration = 302,
 
-        AccountNotAuthenticate = 401,
         InternalServerError = 500,
     }
 }

@@ -1,11 +1,9 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
-using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
+using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Settings;
-using FriendBook.IdentityServer.API.Domain.Settings.JWT;
-using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,20 +11,18 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 {
     public class TokenService : ITokenService
     {
         private readonly JWTSettings _JWTSettings;
-        private readonly IRedisLockService _redisLockService;
 
-        public TokenService(IOptions<JWTSettings> optionJWTSettings, IRedisLockService redisLockService)
+        public TokenService(IOptions<JWTSettings> optionJWTSettings)
         {
             _JWTSettings = optionJWTSettings.Value;
-            _redisLockService = redisLockService;
         }
 
-        public string GenerateAccessToken(TokenAuth account)
+        public string GenerateAccessToken(DataAccessToken account)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -39,9 +35,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return jwtToken;
         }
 
-        public string GenerateRefreshToken(TokenAuth account)
+        public string GenerateRefreshToken(DataAccessToken account, out string SecretNumber)
         {
-            string SecretNumber;
             var randomNumber = new byte[32];
             using (var rng = RandomNumberGenerator.Create())
             {
@@ -56,8 +51,6 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
             var jwtToken = GenerateToken(_JWTSettings.RefreshTokenSecretKey, _JWTSettings.Issuer, _JWTSettings.Audience, _JWTSettings.RefreshTokenExpirationMinutes, claims);
 
-            _ = _redisLockService.SetSecretNumber(SecretNumber,"Token:" + account.Id.ToString());
-            
             return jwtToken;
         }
 
@@ -90,7 +83,6 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 ValidateLifetime = true,
                 IssuerSigningKey = signingKey,
                 ValidateIssuerSigningKey = true,
-                LifetimeValidator = JwtHelper.CustomLifeTimeValidator
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;

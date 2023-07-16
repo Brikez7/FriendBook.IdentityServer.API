@@ -8,20 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 {
     public class ContactService : IContactService
     {
-        private readonly IContactRepository _contactRepository;
-        protected readonly ILogger<IAccountService> _logger;
-        public ContactService(IContactRepository repository, ILogger<IAccountService> logger)
+        private readonly IAccountRepository _accountRepository;
+        protected readonly ILogger<IUserAccountService> _logger;
+        public ContactService(IAccountRepository repository, ILogger<IUserAccountService> logger)
         {
-            _contactRepository = repository;
+            _accountRepository = repository;
             _logger = logger;
         }
         public async Task<BaseResponse<bool>> ClearContact(Expression<Func<Account, bool>> expression)
         {
-            var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
+            var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
             if (entity == null)
             {
                 return new StandartResponse<bool>()
@@ -30,8 +30,8 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                     StatusCode = StatusCode.EntityNotFound
                 };
             }
-            var accountIsDelete = _contactRepository.Clear(entity);
-            await _contactRepository.SaveAsync();
+            var accountIsDelete = _accountRepository.ClearContact(e => e.Id == entity.Id);
+            await _accountRepository.SaveAsync();
             return new StandartResponse<bool>()
             {
                 Data = accountIsDelete,
@@ -39,26 +39,28 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             };
         }
 
-        public async Task<BaseResponse<ResponseProfile[]>> GetAllProphile(string login, Guid id)
+        public async Task<BaseResponse<ResponseProfile[]>> GetProfiles(string login, Guid userId)
         {
-            var entities = await _contactRepository.GetAll()
-                                                   .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%") && x.Id != id)
+            var entities = await _accountRepository.GetAll()
+                                                   .Where(x => EF.Functions.Like(x.Login.ToLower(), $"%{login.ToLower()}%"))
                                                    .Select(x => new ResponseProfile((Guid)x.Id!, x.Login, x.FullName))
                                                    .ToListAsync();
 
+            var account = entities.FirstOrDefault(x => x.Id == userId);
+            if (account is not null)
+                entities.Remove(account);
 
-            if (entities.Count > 0)
+            if (entities.Count > 0 )
             {
                 return new StandartResponse<ResponseProfile[]>()
                 {
                     Data = entities.ToArray(),
-                    StatusCode = StatusCode.AccountRead
+                    StatusCode = StatusCode.ContactRead
                 };
             }
             return new StandartResponse<ResponseProfile[]>()
             {
-
-                Message = "Prophiles not found",
+                Message = "Profiles not found",
                 StatusCode = StatusCode.EntityNotFound
             };
         }
@@ -66,7 +68,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
         public async Task<BaseResponse<UserContactDTO>> GetContact(Expression<Func<Account, bool>> expression)
         {
-            var entity = await _contactRepository.GetAll().SingleOrDefaultAsync(expression);
+            var entity = await _accountRepository.GetAll().SingleOrDefaultAsync(expression);
             if (entity == null)
             {
                 return new StandartResponse<UserContactDTO>()
@@ -78,29 +80,16 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             return new StandartResponse<UserContactDTO>()
             {
                 Data = new UserContactDTO(entity),
-                StatusCode = StatusCode.AccountRead
+                StatusCode = StatusCode.ContactRead
             };
         }
 
         public async Task<BaseResponse<UserContactDTO>> UpdateContact(UserContactDTO contactDTO, string login, Guid idUser)
         {
-            var userId = await _contactRepository.GetAll()
-                                                 .Select(x => new { x.Id,x.Login})
-                                                 .SingleOrDefaultAsync(x => x.Login == contactDTO.Login);
+            var existsAccount = await _accountRepository.GetAll()
+                                                        .SingleOrDefaultAsync(x => x.Id == idUser);
 
-            if (userId is null && userId?.Id != idUser)  
-            {
-                return new StandartResponse<UserContactDTO>()
-                {
-                    Message = "an account with username already exists",
-                    StatusCode = StatusCode.AccountAlraedyExists,
-                };
-            }
-
-            var account = new Account(contactDTO, idUser);
-            var updatedAccount = _contactRepository.Update(account);
-
-            if (updatedAccount is null) 
+            if (existsAccount is null)  
             {
                 return new StandartResponse<UserContactDTO>()
                 {
@@ -109,12 +98,20 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 };
             }
 
-            await _contactRepository.SaveAsync();
+            var account = new Account(contactDTO, idUser);
 
+            existsAccount.Info = contactDTO.Info;
+            existsAccount.FullName = contactDTO.FullName;
+            existsAccount.Telephone = contactDTO.Telephone;
+            existsAccount.Email = contactDTO.Email;
+            existsAccount.Profession = contactDTO.Profession;
+
+            await _accountRepository.SaveAsync();
+            
             return new StandartResponse<UserContactDTO>()
             {
-                Data = new UserContactDTO(updatedAccount),
-                StatusCode = StatusCode.AccountUpdate,
+                Data = new UserContactDTO(existsAccount),
+                StatusCode = StatusCode.ContactUpdate,
             };
         }
     }

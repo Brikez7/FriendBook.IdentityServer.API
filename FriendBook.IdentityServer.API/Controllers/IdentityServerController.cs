@@ -1,14 +1,14 @@
 using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
-using FriendBook.IdentityServer.API.Domain.UserToken;
+using FriendBook.IdentityServer.API.Domain.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class IdentityServerController : ControllerBase
     {
         private readonly ILogger<IdentityServerController> _logger;
@@ -34,10 +34,10 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("AuthenticateByRefreshToken")]
-        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] TokenAuth accessToken,[FromQuery] string refreshToken)
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] DataAccessToken accessTokenData,[FromQuery] string refreshToken)
         {
-            var responseAuthenicated = await _registrationService.GetAccessToken(accessToken, refreshToken);
-            return Ok(responseAuthenicated);
+            var responseAuthenticated = await _registrationService.GetAccessToken(accessTokenData, refreshToken);
+            return Ok(responseAuthenticated);
         }
 
         [HttpPost("Registration")]
@@ -59,7 +59,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(new StandartResponse<bool>
             {
                 Data = true,
-                StatusCode = Domain.StatusCode.OK
+                StatusCode = Domain.StatusCode.TokenValid
             });
         }
     }

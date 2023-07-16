@@ -4,7 +4,7 @@ using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 {
     public class ValidationService<T> : IValidationService<T>
     {
@@ -29,7 +29,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services
         private static BaseResponse<List<Tuple<string, string>>?> GetErrors(ValidationResult validationResult)
         {
             var isValid = validationResult.IsValid;
-            
+
             var reponse = new StandartResponse<List<Tuple<string, string>>?>();
             if (!isValid)
             {

@@ -1,10 +1,11 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BLL.GrpcServices;
+using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.BLL.Services;
+using FriendBook.IdentityServer.API.BLL.Services.Implementations;
 using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.Settings;
-using FriendBook.IdentityServer.API.Domain.Settings.JWT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,16 +31,13 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
                 options.EnableDetailedErrors = true;
             });
 
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IAccountRepository, AccountRepository>();
 
             services.AddScoped<IContactService, ContactService>();
-            services.AddScoped<IContactRepository, ContactRepository>();
 
             services.AddDbContext<IdentityContext>(opt => opt.UseNpgsql(
                 _configuration.GetConnectionString(IdentityContext.NameConnection)));
-
-            services.AddScoped<IAccessTokenService, AccessTokenService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,9 +49,8 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GrpcPublicContactService>();
                 endpoints.MapGrpcService<GrpcPublicAccountService>();
-
+                endpoints.MapGrpcService<GrpcPublicContactService>();
             });
         }
         public static void AddJWT(IConfiguration configuration, IServiceCollection services)

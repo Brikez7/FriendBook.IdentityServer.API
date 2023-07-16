@@ -1,22 +1,21 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.UserToken;
+﻿using FriendBook.IdentityServer.API.BLL.Helpers;
+using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.Domain.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FriendBook.IdentityServer.API.Controllers
 {
-    [Route("Home/[controller]")]
+    [Route("DeveloperHome/[controller]")]
     [ApiController]
     public class HomeController : ControllerBase
     {
         private readonly ILogger<HomeController> _logger;
-        private Lazy<TokenAuth> UserToken { get; set; } 
-        IRedisLockService RedisLockService { get; set; }
-        public HomeController(ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor, IRedisLockService redisLockService, IAccessTokenService accessTokenService)
+        private Lazy<DataAccessToken> UserToken { get; set; } 
+        public HomeController(ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
-            UserToken =  accessTokenService.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
-            RedisLockService = redisLockService;
+            UserToken =  AccessTokenHelper.CreateUser(httpContextAccessor.HttpContext!.User.Claims);
         }
         [HttpGet("GetClaims")]
         [Authorize]
