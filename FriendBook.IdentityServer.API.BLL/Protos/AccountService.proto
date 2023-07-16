@@ -10,13 +10,13 @@ service PublicAccount
   rpc CheckUserExists (RequestUserId) returns (ResponseUserExists){
   option (google.api.http) =
    {
-    get: "/v1/AccountService/CheckUserExists"
+    get: "/api/v1/GrpcAccountService/CheckUserExists"
    };
   }
-  rpc GetUsersLoginWithId (RequestUsersId) returns (ResponseUsers){
+  rpc GetUsersLoginById (RequestUsersId) returns (ResponseUsers){
   option (google.api.http) =
    {
-    get: "/v1/AccountService/GetUsersLoginWithId"
+    get: "/api/v1/GrpcAccountService/GetUsersLoginById"
    };
   }
 }

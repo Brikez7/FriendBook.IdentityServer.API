@@ -27,17 +27,12 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             }
             return userExists;
         }
-        public override async Task<ResponseUsers> GetUsersLoginWithId(RequestUsersId request, ServerCallContext context)
+        public override async Task<ResponseUsers> GetUsersLoginById(RequestUsersId request, ServerCallContext context)
         {
             var responseLoginsWithId = await _userAccountService.GetLogins(request.UserId.Select(Guid.Parse).ToArray());
             ResponseUsers responseUsers = new ResponseUsers();
 
-            if (responseLoginsWithId.Message is not null)
-            {
-                return null;
-            }
-
-            responseUsers.Users.AddRange(responseLoginsWithId.Data.Select(x => new User() { Id = x.Item1.ToString(), Login = x.Item2 }));
+            responseUsers.Users.AddRange(responseLoginsWithId!.Data!.Select(x => new User() { Id = x.Item1.ToString(), Login = x.Item2 }));
             return responseUsers;
         }
     }

@@ -26,7 +26,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         private ResponseAuthenticated _responseRegistries;
         private DataAccessToken _userData;
 
-        private const string UrlController = "api/v1/Contact";
+        internal const string UrlController = "api/v1/Contact";
 
         public IntegrationTestsContactController(RequestAccount requestAccount)
         {
