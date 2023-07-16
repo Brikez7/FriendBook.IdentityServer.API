@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources;
-using FriendBook.IdentityServer.API.Domain.UserToken;
+using FriendBook.IdentityServer.API.Domain.JWT;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {

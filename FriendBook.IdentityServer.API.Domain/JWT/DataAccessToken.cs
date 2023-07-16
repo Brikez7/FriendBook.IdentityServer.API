@@ -1,4 +1,4 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.UserToken
+﻿namespace FriendBook.IdentityServer.API.Domain.JWT
 {
     public class DataAccessToken
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using FriendBook.IdentityServer.API.Domain.UserToken;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
+using FriendBook.IdentityServer.API.Domain.JWT;
 
 namespace FriendBook.IdentityServer.Tests.WebAppFactories
 {

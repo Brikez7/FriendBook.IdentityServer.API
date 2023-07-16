@@ -1,7 +1,7 @@
 ﻿using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
-using FriendBook.IdentityServer.API.Domain.UserToken;
+using FriendBook.IdentityServer.API.Domain.JWT;
 using System.Security.Claims;
 
 namespace FriendBook.IdentityServer.API.BLL.Interfaces

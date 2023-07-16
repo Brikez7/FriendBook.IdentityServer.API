@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace FriendBook.IdentityServer.Tests.WebAppFactories
 {
-    public static class AssertEx
+    internal static class AssertEx
     {
-        public static void PropertyValuesAreEquals(object actual, object expected)
+        internal static void PropertyValuesAreEquals(object actual, object expected)
         {
             PropertyInfo[] properties = expected.GetType().GetProperties();
             foreach (PropertyInfo property in properties)

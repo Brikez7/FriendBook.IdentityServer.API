@@ -8,8 +8,8 @@ using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
+using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Settings;
-using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

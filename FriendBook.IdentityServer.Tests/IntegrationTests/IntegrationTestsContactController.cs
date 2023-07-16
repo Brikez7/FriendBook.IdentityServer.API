@@ -11,8 +11,8 @@ using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSou
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using FriendBook.IdentityServer.API.Domain.UserToken;
 using System.Net.Http.Headers;
+using FriendBook.IdentityServer.API.Domain.JWT;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
