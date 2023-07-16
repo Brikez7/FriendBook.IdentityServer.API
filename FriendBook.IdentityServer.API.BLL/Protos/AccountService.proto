@@ -1,13 +1,24 @@
 ﻿syntax = "proto3";
 
 option csharp_namespace = "FriendBook.IdentityServer.API.BLL.gRPCClients.AccountService";
+import "Google/API/annotations.proto";
 
 package AccountService;
 
 service PublicAccount
 {
-  rpc CheckUserExists (RequestUserId) returns (ResponseUserExists);
-  rpc GetUsersLoginWithId (RequestUsersId) returns (ResponseUsers);
+  rpc CheckUserExists (RequestUserId) returns (ResponseUserExists){
+  option (google.api.http) =
+   {
+    get: "/v1/AccountService/CheckUserExists"
+   };
+  }
+  rpc GetUsersLoginWithId (RequestUsersId) returns (ResponseUsers){
+  option (google.api.http) =
+   {
+    get: "/v1/AccountService/GetUsersLoginWithId"
+   };
+  }
 }
 
 message RequestUserId

@@ -9,7 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.55.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="7.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" Version="0.3.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -25,7 +27,7 @@
     <ProjectReference Include="..\FriendBook.IdentityServer.API.DAL\FriendBook.IdentityServer.API.DAL.csproj" />
     
   </ItemGroup>
-
+  
   <ItemGroup>
     <Content Update="appsettings.Test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

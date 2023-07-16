@@ -1,6 +1,9 @@
+using FriendBook.IdentityServer.API.BLL.GrpcServices;
+using FriendBook.IdentityServer.API.BLL.Services;
 using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace FriendBook.IdentityServer.API
 {
@@ -22,21 +25,38 @@ namespace FriendBook.IdentityServer.API
 
             builder.Services.AddDbContext<IdentityContext>(opt => opt.UseNpgsql(
                 builder.Configuration.GetConnectionString(IdentityContext.NameConnection)));
+
             builder.AddHostedServices();
 
             builder.Services.Configure<AppUISetting>(builder.Configuration.GetSection("AppUISetting"));
 
+            builder.Services.AddGrpcReflection();
+            builder.Services.AddGrpc().AddJsonTranscoding();
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            
+            builder.Services.AddGrpcSwagger();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1.1",new OpenApiInfo { Version = "v1.1" });
+            });
 
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1.1/swagger.json", "FriendBook.IdentityServer.API v1.1");
+                });
             }
+
+            app.MapGrpcService<GrpcPublicAccountService>();
+            app.MapGrpcService<GrpcPublicContactService>();
+
+            app.MapGrpcReflectionService();
 
             app.AddCorsUI();
 
