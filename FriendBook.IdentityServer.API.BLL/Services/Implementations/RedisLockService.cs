@@ -7,7 +7,7 @@ using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 {
     public class RedisLockService : IRedisLockService
     {

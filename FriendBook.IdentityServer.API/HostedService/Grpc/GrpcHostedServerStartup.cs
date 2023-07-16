@@ -1,5 +1,7 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BLL.GrpcServices;
+using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.BLL.Services;
+using FriendBook.IdentityServer.API.BLL.Services.Implementations;
 using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
@@ -47,9 +49,8 @@ namespace FriendBook.IdentityServer.API.HostedService.Grpc
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GrpcPublicContactService>();
                 endpoints.MapGrpcService<GrpcPublicAccountService>();
-
+                endpoints.MapGrpcService<GrpcPublicContactService>();
             });
         }
         public static void AddJWT(IConfiguration configuration, IServiceCollection services)

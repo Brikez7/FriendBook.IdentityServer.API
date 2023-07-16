@@ -13,7 +13,7 @@ using FriendBook.IdentityServer.API.Domain.UserToken;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 {
     public class RegistrationService : IRegistrationService
     {
@@ -91,14 +91,14 @@ namespace FriendBook.IdentityServer.API.BLL.Services
             if (claimsRT?.StatusCode == StatusCode.TokenRead || userSecretNumber != null)
             {
                 var secretNumberResponse = await _redisLockService.GetSecretNumber("Token:" + tokenAuth.Id.ToString());
-                if (secretNumberResponse.StatusCode == StatusCode.RedisReceive && secretNumberResponse.Data == userSecretNumber) 
+                if (secretNumberResponse.StatusCode == StatusCode.RedisReceive && secretNumberResponse.Data == userSecretNumber)
                 {
                     var newAccessToken = _tokenService.GenerateAccessToken(tokenAuth);
-                    return new StandartResponse<string> {Data = newAccessToken, StatusCode = StatusCode.UserAuthenticatedByRT };
+                    return new StandartResponse<string> { Data = newAccessToken, StatusCode = StatusCode.UserAuthenticatedByRT };
                 }
                 return new StandartResponse<string> { Message = "Secret number not found please go to authorization", StatusCode = StatusCode.ErrorAuthenticate };
             }
-            return  new StandartResponse<string> { Message = "Refresh token or access token is not valid", StatusCode = StatusCode.ErrorAuthenticate };
+            return new StandartResponse<string> { Message = "Refresh token or access token is not valid", StatusCode = StatusCode.ErrorAuthenticate };
         }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.GrpcServices
 {
     public class GrpcPublicContactService : PublicContact.PublicContactBase
     {
@@ -24,14 +24,14 @@ namespace FriendBook.IdentityServer.API.BLL.Services
 
             var responseLocalPropfile = await _contactService.GetProfiles(request.Login, User.Id);
 
-            if (responseLocalPropfile.Message is not null) 
+            if (responseLocalPropfile.Message is not null)
             {
                 return null;
             }
             var r = responseLocalPropfile.Data.ToArray();
             var profiles = r.Select(x => new Profile() { FullName = x.FullName ?? "", Login = x.Login.ToString(), Id = x.Id.ToString() });
-            
-            var responseProfiles = new ResponseProfiles() {};
+
+            var responseProfiles = new ResponseProfiles() { };
             responseProfiles.Profiles.AddRange(profiles);
             return responseProfiles;
         }
