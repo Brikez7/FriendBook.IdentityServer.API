@@ -8,7 +8,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories
 {
     internal static class TokenHelpers
     {
-        public static TokenAuth? GetDataTokenAuth(string? token, string Issuer, string Audience, string secretKey)
+        public static DataAccessToken? GetDataTokenAuth(string? token, string Issuer, string Audience, string secretKey)
         {
             if(token is null)
                 throw new ArgumentNullException(nameof(token));
@@ -39,7 +39,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories
             var login = principal.Claims.First(c => c.Type == CustomClaimType.Login).Value;
             var id = Guid.Parse(principal.Claims.First(c => c.Type == CustomClaimType.AccountId).Value);
 
-            return new TokenAuth(login, id);
+            return new DataAccessToken(login, id);
         }
     }
 }

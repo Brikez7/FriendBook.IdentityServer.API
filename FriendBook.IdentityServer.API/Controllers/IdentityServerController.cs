@@ -34,7 +34,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpPost("AuthenticateByRefreshToken")]
-        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] TokenAuth accessTokenData,[FromQuery] string refreshToken)
+        public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] DataAccessToken accessTokenData,[FromQuery] string refreshToken)
         {
             var responseAuthenticated = await _registrationService.GetAccessToken(accessTokenData, refreshToken);
             return Ok(responseAuthenticated);

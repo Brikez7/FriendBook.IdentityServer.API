@@ -8,19 +8,15 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
 {
     public interface ITokenService
     {
-        public BaseResponse<ResponseAuthenticated> GenerateAuthenticatedToken(TokenAuth account)
+        public ResponseAuthenticated GenerateAuthenticatedToken(DataAccessToken account, out string SecretNumber)
         {
             var accessToken = GenerateAccessToken(account);
-            var refreshToken = GenerateRefreshToken(account);
+            var refreshToken = GenerateRefreshToken(account, out SecretNumber);
 
-            return new StandartResponse<ResponseAuthenticated>
-            {
-                Data = new ResponseAuthenticated(accessToken, refreshToken),
-                StatusCode = StatusCode.TokenGenerate
-            };
+            return new ResponseAuthenticated(accessToken, refreshToken);
         }
-        public string GenerateAccessToken(TokenAuth account);
-        public string GenerateRefreshToken(TokenAuth account);
+        public string GenerateAccessToken(DataAccessToken account);
+        public string GenerateRefreshToken(DataAccessToken account, out string SecretNumber);
         public BaseResponse<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token, string secretKey);
     }
 }

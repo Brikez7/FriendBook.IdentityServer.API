@@ -9,6 +9,6 @@ namespace FriendBook.IdentityServer.API.BLL.Interfaces
     {
         public Task<BaseResponse<ResponseAuthenticated>> Registration(RequestAccount DTO);
         public Task<BaseResponse<ResponseAuthenticated>> Authenticate(RequestAccount DTO);
-        public Task<BaseResponse<string>> GetAccessToken(TokenAuth tokenAuth, string refreshToken);
+        public Task<BaseResponse<string>> GetAccessToken(DataAccessToken tokenAuth, string refreshToken);
     }
 }

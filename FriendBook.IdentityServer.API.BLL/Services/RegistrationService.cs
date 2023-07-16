@@ -71,14 +71,18 @@ namespace FriendBook.IdentityServer.API.BLL.Services
                 };
             }
 
+            var dataAT = new DataAccessToken(account.Login, (Guid)account.Id!);
+            var responseTokens = _tokenService.GenerateAuthenticatedToken(dataAT, out string secretNumber);
+            _ = _redisLockService.SetSecretNumber(secretNumber, "Token:" + account.Id.ToString());
+
             return new StandartResponse<ResponseAuthenticated>()
             {
-                Data = _tokenService.GenerateAuthenticatedToken(new TokenAuth(account.Login,(Guid)account.Id!)).Data,
+                Data = responseTokens,
                 StatusCode = StatusCode.UserAuthenticated
             };
         }
 
-        public async Task<BaseResponse<string>> GetAccessToken(TokenAuth tokenAuth, string refreshToken)
+        public async Task<BaseResponse<string>> GetAccessToken(DataAccessToken tokenAuth, string refreshToken)
         {
             var claimsRT = _tokenService.GetPrincipalFromExpiredToken(refreshToken, _jwtSettings.RefreshTokenSecretKey);
 
