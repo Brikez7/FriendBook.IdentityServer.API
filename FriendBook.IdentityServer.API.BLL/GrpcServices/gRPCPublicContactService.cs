@@ -1,4 +1,4 @@
-﻿using FriendBook.IdentityServer.API.BLL.gRPCClients.ContactService;
+﻿using FriendBook.IdentityServer.API.BLL.gRPCServices.ContactService;
 using FriendBook.IdentityServer.API.BLL.Helpers;
 using FriendBook.IdentityServer.API.BLL.Interfaces;
 using Grpc.Core;

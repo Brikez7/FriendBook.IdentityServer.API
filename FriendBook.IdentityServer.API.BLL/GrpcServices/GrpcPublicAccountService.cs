@@ -1,4 +1,4 @@
-﻿using FriendBook.IdentityServer.API.BLL.gRPCClients.AccountService;
+﻿using FriendBook.IdentityServer.API.BLL.gRPCServices.AccountService;
 using FriendBook.IdentityServer.API.BLL.Interfaces;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
