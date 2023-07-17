@@ -13,7 +13,7 @@ using System.Net.Http.Json;
 using FriendBook.IdentityServer.API;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
-using FriendBook.IdentityServer.API.BLL.gRPCClients.AccountService;
+using FriendBook.IdentityServer.API.BLL.gRPCServices.AccountService;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {

@@ -12,9 +12,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FriendBook.IdentityServer.API;
 using Microsoft.Extensions.DependencyInjection;
-using FriendBook.IdentityServer.API.BLL.gRPCClients.AccountService;
 using System.Net;
-using FriendBook.IdentityServer.API.BLL.gRPCClients.ContactService;
+using FriendBook.IdentityServer.API.BLL.gRPCServices.ContactService;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
