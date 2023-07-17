@@ -1,8 +1,8 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Response;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

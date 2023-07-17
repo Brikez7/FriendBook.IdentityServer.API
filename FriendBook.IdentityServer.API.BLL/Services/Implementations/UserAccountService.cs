@@ -1,8 +1,8 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
-using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.Entities;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
+using FriendBook.IdentityServer.API.Domain.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;

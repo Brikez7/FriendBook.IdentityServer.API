@@ -13,6 +13,7 @@ using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Response;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
@@ -79,7 +80,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             {
                 Assert.That(responseAuth.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAlreadyExists));
+                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(StatusCode.UserAlreadyExists));
                 Assert.IsNull(customResponseAuth?.Data?.RefreshToken);
                 Assert.IsNull(customResponseAuth?.Data?.AccessToken);
             });
@@ -98,7 +99,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             {
                 Assert.That(responseAuth.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAuthenticated));
+                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(StatusCode.UserAuthenticated));
                 Assert.That(customResponseAuth?.Data?.RefreshToken, Is.Not.Null);
                 Assert.That(customResponseAuth?.Data?.AccessToken, Is.Not.Null);
             });
@@ -116,7 +117,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             Assert.Multiple(() =>
             {
                 Assert.That(responseAT.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseAT.StatusCode, Is.EqualTo(API.Domain.StatusCode.UserAuthenticatedByRT));
+                Assert.That(customResponseAT.StatusCode, Is.EqualTo(StatusCode.UserAuthenticatedByRT));
                 Assert.That(customResponseAT?.Data, Is.Not.Null);
             });
         }
@@ -130,7 +131,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             Assert.Multiple(() =>
             {
                 Assert.That(responseTokenValid.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseTokenValid.StatusCode, Is.EqualTo(API.Domain.StatusCode.TokenValid));
+                Assert.That(customResponseTokenValid.StatusCode, Is.EqualTo(StatusCode.TokenValid));
                 Assert.That(customResponseTokenValid?.Data, Is.EqualTo(true));
             });
         }

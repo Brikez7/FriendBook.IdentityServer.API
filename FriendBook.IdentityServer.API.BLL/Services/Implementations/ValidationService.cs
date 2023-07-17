@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
+using FriendBook.IdentityServer.API.Domain.Response;
 
 namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 {

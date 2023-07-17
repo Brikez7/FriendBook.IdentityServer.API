@@ -1,7 +1,7 @@
-﻿using FriendBook.IdentityServer.API.Domain;
-using FriendBook.IdentityServer.API.Domain.CustomClaims;
+﻿using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Response;
 using System.Security.Claims;
 
 namespace FriendBook.IdentityServer.API.BLL.Helpers

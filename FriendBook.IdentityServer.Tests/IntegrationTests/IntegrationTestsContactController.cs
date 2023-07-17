@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Response;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
@@ -79,7 +80,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             Assert.Multiple(() =>
             {
                 Assert.That(responseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseContact.StatusCode, Is.EqualTo(API.Domain.StatusCode.ContactRead));
+                Assert.That(customResponseContact.StatusCode, Is.EqualTo(StatusCode.ContactRead));
                 Assert.IsNotNull(customResponseContact?.Data);
             });
         }
@@ -100,7 +101,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             {
                 Assert.That(responseProfiles.StatusCode, Is.EqualTo(HttpStatusCode.OK));
                 Assert.That(responseAddNewUser.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseProfiles.StatusCode, Is.EqualTo(API.Domain.StatusCode.ContactRead));
+                Assert.That(customResponseProfiles.StatusCode, Is.EqualTo(StatusCode.ContactRead));
                 Assert.IsNotNull(customResponseProfiles?.Data);
                 Assert.That(customResponseProfiles!.Data![0].Login, Is.EqualTo(newUser.Login));
             });
@@ -132,7 +133,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
                 Assert.That(responseUpdatedContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
                 Assert.That(responseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseUpdatedContact.StatusCode, Is.EqualTo(API.Domain.StatusCode.ContactUpdate));
+                Assert.That(customResponseUpdatedContact.StatusCode, Is.EqualTo(StatusCode.ContactUpdate));
                 Assert.That(customResponseUpdatedContact?.Data, Is.Not.Null);
                 Assert.That(customResponseContact?.Data, Is.Not.Null);
                 AssertEx.PropertyValuesAreEquals(customResponseContact!.Data!, customResponseUpdatedContact!.Data!);

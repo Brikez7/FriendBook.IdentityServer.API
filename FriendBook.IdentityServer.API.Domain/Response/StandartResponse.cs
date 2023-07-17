@@ -1,4 +1,6 @@
-﻿namespace FriendBook.IdentityServer.API.Domain.InnerResponse
+﻿using FriendBook.IdentityServer.API.Domain.Response;
+
+namespace FriendBook.IdentityServer.API.Domain.InnerResponse
 {
     public class StandartResponse<T> : BaseResponse<T>
     {
