@@ -1,14 +1,11 @@
-﻿using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
-using NpgsqlTypes;
-using NSubstitute.Extensions;
+﻿using DotNet.Testcontainers.Builders;
 using Testcontainers.Redis;
 
 namespace FriendBook.IdentityServer.Tests.WebAppFactories.ContainerBuilders
 {
     public class ContainerBuilderRedis
     {
-        public const string ImageRedis = "redis:latest";
+        public const string Image = "redis:latest";
         public const string ExposedPort = "6377";
         public const string PortBinding = "6378";
         public const string Password = "TestRedis54321!";
@@ -19,7 +16,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories.ContainerBuilders
             return redisBuilder
                 .WithName(r)
                 .WithHostname($"RedisHost.Identity.{Guid.NewGuid():N}")
-                .WithImage(ImageRedis)
+                .WithImage(Image)
                 .WithPortBinding(PortBinding, true)
                 .WithExposedPort(ExposedPort)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted($"redis-cli CONFIG SET requirepass \"{Password}\""))

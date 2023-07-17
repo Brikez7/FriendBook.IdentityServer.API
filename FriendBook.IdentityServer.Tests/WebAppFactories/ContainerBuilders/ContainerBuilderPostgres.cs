@@ -10,7 +10,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories.ContainerBuilders
         public const string Database = "Test_FriendBook_IdentityServer";
         public const string ExposedPort = "5433";
         public const string PortBinding = "5432";
-        private const string ImagePostgres = "postgres:latest";
+        private const string Image = "postgres:latest";
 
         public static PostgreSqlContainer CreatePostgreSQLContainer()
         {
@@ -18,7 +18,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories.ContainerBuilders
 
             return dbBuilderPostgre
                 .WithName($"PostgresDB.Identity.{Guid.NewGuid():N}")
-                .WithImage(ImagePostgres)
+                .WithImage(Image)
                 .WithHostname($"PostgresHost.Identity.{Guid.NewGuid():N}")
                 .WithExposedPort(ExposedPort)
                 .WithPortBinding(PortBinding, true)
