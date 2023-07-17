@@ -1,12 +1,11 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Helpers;
-using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
+using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.Entities;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Response;
 using FriendBook.IdentityServer.API.Domain.Settings;
@@ -36,7 +35,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
         public async Task<BaseResponse<ResponseAuthenticated>> Registration(RequestAccount accountDTO)
         {
             var responseAccount = await _userAccountService.GetAccount(x => x.Login == accountDTO.Login);
-            if (responseAccount.StatusCode == StatusCode.EntityNotFound)
+            if (responseAccount.StatusCode == Code.EntityNotFound)
             {
                 PasswordHelper.CreatePasswordHash(accountDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -49,13 +48,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<ResponseAuthenticated>()
                 {
                     Data = authToken,
-                    StatusCode = StatusCode.UserRegistered
+                    StatusCode = Code.UserRegistered
                 };
             }
             return new StandartResponse<ResponseAuthenticated>()
             {
                 Message = "Account with login already exists",
-                StatusCode = StatusCode.UserAlreadyExists
+                StatusCode = Code.AccountAlreadyExists
             };
         }
 
@@ -68,7 +67,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<ResponseAuthenticated>()
                 {
                     Message = "Account not found",
-                    StatusCode = StatusCode.ErrorAuthenticate
+                    StatusCode = Code.ErrorAuthenticated
                 };
             }
 
@@ -79,26 +78,26 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<ResponseAuthenticated>()
             {
                 Data = responseTokens,
-                StatusCode = StatusCode.UserAuthenticated
+                StatusCode = Code.UserAuthenticated
             };
         }
 
-        public async Task<BaseResponse<string>> GetAccessToken(DataAccessToken tokenAuth, string refreshToken)
+        public async Task<BaseResponse<string>> AuthenticateByRefreshToken(DataAccessToken tokenAuth, string refreshToken)
         {
             var claimsRT = _tokenService.GetPrincipalFromExpiredToken(refreshToken, _jwtSettings.RefreshTokenSecretKey);
 
             var userSecretNumber = claimsRT?.Data?.Claims.FirstOrDefault(x => x.Type == CustomClaimType.SecretNumber)?.Value;
-            if (claimsRT?.StatusCode == StatusCode.TokenRead || userSecretNumber != null)
+            if (claimsRT?.StatusCode == Code.TokenReadied || userSecretNumber != null)
             {
                 var secretNumberResponse = await _redisLockService.GetSecretNumber("Token:" + tokenAuth.Id.ToString());
-                if (secretNumberResponse.StatusCode == StatusCode.RedisReceive && secretNumberResponse.Data == userSecretNumber)
+                if (secretNumberResponse.StatusCode == Code.RedisReceived && secretNumberResponse.Data == userSecretNumber)
                 {
                     var newAccessToken = _tokenService.GenerateAccessToken(tokenAuth);
-                    return new StandartResponse<string> { Data = newAccessToken, StatusCode = StatusCode.UserAuthenticatedByRT };
+                    return new StandartResponse<string> { Data = newAccessToken, StatusCode = Code.UserAuthenticatedByRT };
                 }
-                return new StandartResponse<string> { Message = "Secret number not found please go to authorization", StatusCode = StatusCode.ErrorAuthenticate };
+                return new StandartResponse<string> { Message = "Secret number not found please go to authorization", StatusCode = Code.ErrorAuthenticatedByRT };
             }
-            return new StandartResponse<string> { Message = "Refresh token or access token is not valid", StatusCode = StatusCode.ErrorAuthenticate };
+            return new StandartResponse<string> { Message = "Refresh token or access token is not valid", StatusCode = Code.TokenNotValidated };
         }
     }
 }

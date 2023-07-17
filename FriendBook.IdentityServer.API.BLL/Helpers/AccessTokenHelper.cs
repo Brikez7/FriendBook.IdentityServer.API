@@ -1,5 +1,4 @@
 ﻿using FriendBook.IdentityServer.API.Domain.CustomClaims;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Response;
 using System.Security.Claims;
@@ -25,7 +24,7 @@ namespace FriendBook.IdentityServer.API.BLL.Helpers
             var stringId = claims.FirstOrDefault(c => c.Type == CustomClaimType.AccountId)?.Value;
 
             if (stringId == null || login == null)
-                return new StandartResponse<DataAccessToken?> { Message = "Access token not validated", StatusCode = StatusCode.TokenNotValid };
+                return new StandartResponse<DataAccessToken?> { Message = "Access token not validated", StatusCode = Code.TokenNotValidated };
 
             var id = stringId is not null ? Guid.Parse(stringId) : Guid.Empty;
 

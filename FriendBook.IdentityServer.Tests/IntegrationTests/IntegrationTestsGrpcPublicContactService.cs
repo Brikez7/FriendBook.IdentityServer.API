@@ -1,7 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.DTO;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources;
@@ -14,6 +13,8 @@ using FriendBook.IdentityServer.API;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using FriendBook.IdentityServer.API.BLL.gRPCServices.ContactService;
+using FriendBook.IdentityServer.API.Domain.Response;
+using FriendBook.IdentityServer.Tests.TestHelpers;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {

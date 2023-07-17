@@ -1,6 +1,4 @@
-﻿using FriendBook.IdentityServer.API.Domain.DTO;
-using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
+﻿using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using System.Collections;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources

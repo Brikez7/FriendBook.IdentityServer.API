@@ -1,9 +1,9 @@
 ﻿using FriendBook.IdentityServer.API.BLL.gRPCServices.AccountService;
-using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
-namespace FriendBook.IdentityServer.API.BLL.Services
+namespace FriendBook.IdentityServer.API.BLL.GrpcServices
 {
     public class GrpcPublicAccountService : PublicAccount.PublicAccountBase
     {

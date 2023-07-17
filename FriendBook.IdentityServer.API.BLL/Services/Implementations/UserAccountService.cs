@@ -1,7 +1,6 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.Entities;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<bool>()
                 {
                     Message = "entity not found",
-                    StatusCode = StatusCode.EntityNotFound,
+                    StatusCode = Code.EntityNotFound,
                 };
             }
             var accountIsDelete = _accountRepository.Delete(entity);
@@ -35,7 +34,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<bool>()
             {
                 Data = accountIsDelete,
-                StatusCode = StatusCode.AccountDelete
+                StatusCode = Code.AccountDeleted
             };
         }
 
@@ -47,13 +46,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<Account>()
                 {
                     Message = "Account not found",
-                    StatusCode = StatusCode.EntityNotFound
+                    StatusCode = Code.EntityNotFound
                 };
             }
             return new StandartResponse<Account>()
             {
                 Data = entity,
-                StatusCode = StatusCode.AccountRead
+                StatusCode = Code.AccountReadied
             };
         }
         public async Task<BaseResponse<Tuple<Guid, string>[]>> GetLogins(Guid[] usersIds)
@@ -78,7 +77,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<bool>()
             {
                 Data = accountExists,
-                StatusCode = StatusCode.AccountRead
+                StatusCode = Code.AccountReadied
             };
         }
     }

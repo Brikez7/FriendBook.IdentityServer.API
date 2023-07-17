@@ -1,11 +1,9 @@
-﻿using FriendBook.IdentityServer.API.Domain.Response;
-
-namespace FriendBook.IdentityServer.API.Domain.InnerResponse
+﻿namespace FriendBook.IdentityServer.API.Domain.Response
 {
     public class StandartResponse<T> : BaseResponse<T>
     {
-        public override string? Message { get; set; } 
-        public override StatusCode StatusCode { get; set; }
+        public override string? Message { get; set; }
+        public override Code StatusCode { get; set; }
         public override T? Data { get; set; }
     }
 }

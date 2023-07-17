@@ -1,7 +1,7 @@
-using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +26,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Authenticate([FromBody] RequestAccount accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation.StatusCode != Domain.Response.StatusCode.EntityIsValid)
+            if (responseValidation.StatusCode != Code.EntityIsValidated)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Authenticate(accountDTO);
@@ -36,7 +36,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         [HttpPost("AuthenticateByRefreshToken")]
         public async Task<IActionResult> AuthenticateByRefreshToken([FromBody] DataAccessToken accessTokenData,[FromQuery] string refreshToken)
         {
-            var responseAuthenticated = await _registrationService.GetAccessToken(accessTokenData, refreshToken);
+            var responseAuthenticated = await _registrationService.AuthenticateByRefreshToken(accessTokenData, refreshToken);
             return Ok(responseAuthenticated);
         }
 
@@ -44,7 +44,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Registration([FromBody] RequestAccount accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation.StatusCode != Domain.Response.StatusCode.EntityIsValid)
+            if (responseValidation.StatusCode != Code.EntityIsValidated)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Registration(accountDTO);
@@ -59,7 +59,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(new StandartResponse<bool>
             {
                 Data = true,
-                StatusCode = Domain.Response.StatusCode.TokenValid
+                StatusCode = Code.TokenValidated
             });
         }
     }

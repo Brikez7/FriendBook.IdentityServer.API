@@ -1,6 +1,6 @@
-﻿using FriendBook.IdentityServer.API.Domain.InnerResponse;
+﻿using FriendBook.IdentityServer.API.Domain.Response;
 
-namespace FriendBook.IdentityServer.API.BLL.Interfaces
+namespace FriendBook.IdentityServer.API.BLL.Services.Interfaces
 {
     public interface IValidationService<T>
     {

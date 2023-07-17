@@ -1,5 +1,4 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
+﻿using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using FriendBook.IdentityServer.API.Domain.Response;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.Extensions.Caching.Distributed;
@@ -35,11 +34,11 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 
                 if (secretNumber != null)
                 {
-                    return new StandartResponse<string?> { Data = secretNumber, StatusCode = StatusCode.RedisReceive };
+                    return new StandartResponse<string?> { Data = secretNumber, StatusCode = Code.RedisReceived };
                 }
-                return new StandartResponse<string?> { Data = null, StatusCode = StatusCode.RedisEmpty, Message = "Object not found" };
+                return new StandartResponse<string?> { Data = null, StatusCode = Code.RedisEmpty, Message = "Object not found" };
             }
-            return new StandartResponse<string?> { Data = null, StatusCode = StatusCode.RedisLock, Message = "Redis was locked" };
+            return new StandartResponse<string?> { Data = null, StatusCode = Code.RedisLocked, Message = "Redis was locked" };
         }
 
         public async Task SetSecretNumber(string value, string key)

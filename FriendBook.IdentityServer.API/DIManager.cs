@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.BLL.Services.Implementations;
+using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using FriendBook.IdentityServer.API.DAL.Repositories.Implemetations;
 using FriendBook.IdentityServer.API.DAL.Repositories.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;

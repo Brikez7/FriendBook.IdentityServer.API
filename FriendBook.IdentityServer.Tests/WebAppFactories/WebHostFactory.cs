@@ -1,5 +1,5 @@
 ﻿using FriendBook.IdentityServer.API.Domain.Settings;
-using FriendBook.IdentityServer.Tests.WebAppFactories.DbBuilders;
+using FriendBook.IdentityServer.Tests.WebAppFactories.ContainerBuilders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

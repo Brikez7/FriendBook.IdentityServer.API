@@ -1,7 +1,8 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Helpers;
-using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.JWT;
+using FriendBook.IdentityServer.API.Domain.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +37,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
         {
             var responseValidation = await _contactValidationService.ValidateAsync(userContactDTO);
-            if (responseValidation.StatusCode != Domain.Response.StatusCode.EntityIsValid)
+            if (responseValidation.StatusCode != Code.EntityIsValidated)
                 return Ok(responseValidation);
 
             var response = await _contactService.UpdateContact(userContactDTO, UserToken.Value.Login,UserToken.Value.Id);

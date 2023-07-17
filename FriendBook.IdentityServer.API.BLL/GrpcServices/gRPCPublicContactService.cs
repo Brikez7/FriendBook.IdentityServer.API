@@ -1,6 +1,6 @@
 ﻿using FriendBook.IdentityServer.API.BLL.gRPCServices.ContactService;
 using FriendBook.IdentityServer.API.BLL.Helpers;
-using FriendBook.IdentityServer.API.BLL.Interfaces;
+using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;

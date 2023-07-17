@@ -4,13 +4,13 @@ using System.Text;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
 using FriendBook.IdentityServer.API.Domain.JWT;
 
-namespace FriendBook.IdentityServer.Tests.WebAppFactories
+namespace FriendBook.IdentityServer.Tests.TestHelpers
 {
     internal static class TokenHelpers
     {
         public static DataAccessToken? GetDataTokenAuth(string? token, string Issuer, string Audience, string secretKey)
         {
-            if(token is null)
+            if (token is null)
                 throw new ArgumentNullException(nameof(token));
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -32,7 +32,7 @@ namespace FriendBook.IdentityServer.Tests.WebAppFactories
 
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
 
-            if (securityToken is not JwtSecurityToken jwtSecurityToken 
+            if (securityToken is not JwtSecurityToken jwtSecurityToken
                 || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 return null;
 

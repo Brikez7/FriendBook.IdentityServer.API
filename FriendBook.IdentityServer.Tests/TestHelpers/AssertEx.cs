@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 
-namespace FriendBook.IdentityServer.Tests.WebAppFactories
+namespace FriendBook.IdentityServer.Tests.TestHelpers
 {
     internal static class AssertEx
     {

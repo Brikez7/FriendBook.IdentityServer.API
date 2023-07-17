@@ -1,5 +1,4 @@
 using FriendBook.IdentityServer.API.BLL.GrpcServices;
-using FriendBook.IdentityServer.API.BLL.Services;
 using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.EntityFrameworkCore;

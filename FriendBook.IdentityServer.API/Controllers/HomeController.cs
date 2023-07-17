@@ -1,5 +1,4 @@
 ﻿using FriendBook.IdentityServer.API.BLL.Helpers;
-using FriendBook.IdentityServer.API.BLL.Interfaces;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

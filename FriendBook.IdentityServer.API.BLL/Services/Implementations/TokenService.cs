@@ -1,6 +1,6 @@
-﻿using FriendBook.IdentityServer.API.BLL.Interfaces;
+﻿using FriendBook.IdentityServer.API.BLL.Services.Interfaces;
+using FriendBook.IdentityServer.API.Domain;
 using FriendBook.IdentityServer.API.Domain.CustomClaims;
-using FriendBook.IdentityServer.API.Domain.InnerResponse;
 using FriendBook.IdentityServer.API.Domain.JWT;
 using FriendBook.IdentityServer.API.Domain.Response;
 using FriendBook.IdentityServer.API.Domain.Settings;
@@ -88,13 +88,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             SecurityToken securityToken;
 
             if(!tokenHandler.CanReadToken(token))
-                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = StatusCode.TokenNotValid };
+                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = Code.TokenNotValidated };
 
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = StatusCode.TokenNotValid };
-            return new StandartResponse<ClaimsPrincipal> { Data = principal, StatusCode = StatusCode.TokenRead };
+                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = Code.TokenNotValidated };
+            return new StandartResponse<ClaimsPrincipal> { Data = principal, StatusCode = Code.TokenReadied };
         }
     }
 }

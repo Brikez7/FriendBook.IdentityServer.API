@@ -4,7 +4,7 @@ using NpgsqlTypes;
 using NSubstitute.Extensions;
 using Testcontainers.Redis;
 
-namespace FriendBook.IdentityServer.Tests.WebAppFactories.DbBuilders
+namespace FriendBook.IdentityServer.Tests.WebAppFactories.ContainerBuilders
 {
     public class ContainerBuilderRedis
     {
