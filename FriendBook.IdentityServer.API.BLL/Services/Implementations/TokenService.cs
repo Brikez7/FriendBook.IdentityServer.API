@@ -88,13 +88,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             SecurityToken securityToken;
 
             if(!tokenHandler.CanReadToken(token))
-                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = Code.TokenNotValidated };
+                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = ServiceCode.TokenNotValidated };
 
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = Code.TokenNotValidated };
-            return new StandartResponse<ClaimsPrincipal> { Data = principal, StatusCode = Code.TokenReadied };
+                return new StandartResponse<ClaimsPrincipal> { Message = "Token not validated", StatusCode = ServiceCode.TokenNotValidated };
+            return new StandartResponse<ClaimsPrincipal> { Data = principal, StatusCode = ServiceCode.TokenReadied };
         }
     }
 }

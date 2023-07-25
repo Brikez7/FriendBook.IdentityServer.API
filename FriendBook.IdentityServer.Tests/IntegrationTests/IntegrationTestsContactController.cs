@@ -80,7 +80,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             Assert.Multiple(() =>
             {
                 Assert.That(responseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseContact.StatusCode, Is.EqualTo(Code.ContactReadied));
+                Assert.That(customResponseContact.StatusCode, Is.EqualTo(ServiceCode.ContactReadied));
                 Assert.IsNotNull(customResponseContact?.Data);
             });
         }
@@ -101,7 +101,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             {
                 Assert.That(responseProfiles.StatusCode, Is.EqualTo(HttpStatusCode.OK));
                 Assert.That(responseAddNewUser.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseProfiles.StatusCode, Is.EqualTo(Code.ContactReadied));
+                Assert.That(customResponseProfiles.StatusCode, Is.EqualTo(ServiceCode.ContactReadied));
                 Assert.IsNotNull(customResponseProfiles?.Data);
                 Assert.That(customResponseProfiles!.Data![0].Login, Is.EqualTo(newUser.Login));
             });
@@ -133,7 +133,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
                 Assert.That(responseUpdatedContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
                 Assert.That(responseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseUpdatedContact.StatusCode, Is.EqualTo(Code.ContactUpdated));
+                Assert.That(customResponseUpdatedContact.StatusCode, Is.EqualTo(ServiceCode.ContactUpdated));
                 Assert.That(customResponseUpdatedContact?.Data, Is.Not.Null);
                 Assert.That(customResponseContact?.Data, Is.Not.Null);
                 AssertEx.PropertyValuesAreEquals(customResponseContact!.Data!, customResponseUpdatedContact!.Data!);

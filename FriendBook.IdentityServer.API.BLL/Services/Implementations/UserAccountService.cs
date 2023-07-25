@@ -26,7 +26,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<bool>()
                 {
                     Message = "entity not found",
-                    StatusCode = Code.EntityNotFound,
+                    StatusCode = ServiceCode.EntityNotFound,
                 };
             }
             var accountIsDelete = _accountRepository.Delete(entity);
@@ -34,7 +34,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<bool>()
             {
                 Data = accountIsDelete,
-                StatusCode = Code.AccountDeleted
+                StatusCode = ServiceCode.AccountDeleted
             };
         }
 
@@ -46,13 +46,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<Account>()
                 {
                     Message = "Account not found",
-                    StatusCode = Code.EntityNotFound
+                    StatusCode = ServiceCode.EntityNotFound
                 };
             }
             return new StandartResponse<Account>()
             {
                 Data = entity,
-                StatusCode = Code.AccountReadied
+                StatusCode = ServiceCode.AccountReadied
             };
         }
         public async Task<BaseResponse<Tuple<Guid, string>[]>> GetLogins(Guid[] usersIds)
@@ -77,7 +77,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<bool>()
             {
                 Data = accountExists,
-                StatusCode = Code.AccountReadied
+                StatusCode = ServiceCode.AccountReadied
             };
         }
     }

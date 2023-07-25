@@ -26,7 +26,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Authenticate([FromBody] RequestAccount accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation.StatusCode != Code.EntityIsValidated)
+            if (responseValidation.StatusCode != ServiceCode.EntityIsValidated)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Authenticate(accountDTO);
@@ -44,7 +44,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> Registration([FromBody] RequestAccount accountDTO)
         {
             var responseValidation = await _accountValidationService.ValidateAsync(accountDTO);
-            if (responseValidation.StatusCode != Code.EntityIsValidated)
+            if (responseValidation.StatusCode != ServiceCode.EntityIsValidated)
                 return Ok(responseValidation);
 
             var response = await _registrationService.Registration(accountDTO);
@@ -59,7 +59,7 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(new StandartResponse<bool>
             {
                 Data = true,
-                StatusCode = Code.TokenValidated
+                StatusCode = ServiceCode.TokenValidated
             });
         }
     }

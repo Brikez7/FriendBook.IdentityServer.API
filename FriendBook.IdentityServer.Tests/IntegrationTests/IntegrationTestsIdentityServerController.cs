@@ -80,7 +80,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             {
                 Assert.That(responseAuth.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(Code.AccountAlreadyExists));
+                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(ServiceCode.AccountAlreadyExists));
                 Assert.IsNull(customResponseAuth?.Data?.RefreshToken);
                 Assert.IsNull(customResponseAuth?.Data?.AccessToken);
             });
@@ -99,7 +99,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             {
                 Assert.That(responseAuth.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(Code.UserAuthenticated));
+                Assert.That(customResponseAuth.StatusCode, Is.EqualTo(ServiceCode.UserAuthenticated));
                 Assert.That(customResponseAuth?.Data?.RefreshToken, Is.Not.Null);
                 Assert.That(customResponseAuth?.Data?.AccessToken, Is.Not.Null);
             });
@@ -117,7 +117,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             Assert.Multiple(() =>
             {
                 Assert.That(responseAT.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseAT.StatusCode, Is.EqualTo(Code.UserAuthenticatedByRT));
+                Assert.That(customResponseAT.StatusCode, Is.EqualTo(ServiceCode.UserAuthenticatedByRT));
                 Assert.That(customResponseAT?.Data, Is.Not.Null);
             });
         }
@@ -131,7 +131,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             Assert.Multiple(() =>
             {
                 Assert.That(responseTokenValid.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseTokenValid.StatusCode, Is.EqualTo(Code.TokenValidated));
+                Assert.That(customResponseTokenValid.StatusCode, Is.EqualTo(ServiceCode.TokenValidated));
                 Assert.That(customResponseTokenValid?.Data, Is.EqualTo(true));
             });
         }

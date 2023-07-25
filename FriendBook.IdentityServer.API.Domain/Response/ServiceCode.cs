@@ -1,6 +1,6 @@
 ﻿namespace FriendBook.IdentityServer.API.Domain.Response
 {
-    public enum Code
+    public enum ServiceCode
     {
         EntityNotFound = 200,
 

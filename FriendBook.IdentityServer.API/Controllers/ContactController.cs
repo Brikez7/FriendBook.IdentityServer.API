@@ -37,7 +37,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         public async Task<IActionResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
         {
             var responseValidation = await _contactValidationService.ValidateAsync(userContactDTO);
-            if (responseValidation.StatusCode != Code.EntityIsValidated)
+            if (responseValidation.StatusCode != ServiceCode.EntityIsValidated)
                 return Ok(responseValidation);
 
             var response = await _contactService.UpdateContact(userContactDTO, UserToken.Value.Login,UserToken.Value.Id);

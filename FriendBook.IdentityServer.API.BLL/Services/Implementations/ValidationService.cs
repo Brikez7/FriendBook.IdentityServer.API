@@ -32,12 +32,12 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             var reponse = new StandartResponse<List<Tuple<string, string>>?>();
             if (!isValid)
             {
-                reponse.StatusCode = Code.EntityIsNotValidated;
+                reponse.StatusCode = ServiceCode.EntityIsNotValidated;
                 reponse.Message = $"Error validation: {validationResult.Errors.First().ErrorMessage}";
                 reponse.Data = validationResult.Errors.Select(x => new Tuple<string, string>(x.PropertyName, x.ErrorMessage)).ToList();
                 return reponse;
             }
-            reponse.StatusCode = Code.EntityIsValidated;
+            reponse.StatusCode = ServiceCode.EntityIsValidated;
             return reponse;
         }
     }

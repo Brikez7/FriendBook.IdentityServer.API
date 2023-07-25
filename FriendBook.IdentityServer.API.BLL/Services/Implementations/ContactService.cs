@@ -26,7 +26,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<bool>()
                 {
                     Message = "Contact not found",
-                    StatusCode = Code.EntityNotFound
+                    StatusCode = ServiceCode.EntityNotFound
                 };
             }
             var accountIsDelete = _accountRepository.ClearContact(e => e.Id == entity.Id);
@@ -34,7 +34,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<bool>()
             {
                 Data = accountIsDelete,
-                StatusCode = Code.ContactCleared
+                StatusCode = ServiceCode.ContactCleared
             };
         }
 
@@ -54,13 +54,13 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<ResponseProfile[]>()
                 {
                     Data = entities.ToArray(),
-                    StatusCode = Code.ContactReadied
+                    StatusCode = ServiceCode.ContactReadied
                 };
             }
             return new StandartResponse<ResponseProfile[]>()
             {
                 Message = "Profiles not found",
-                StatusCode = Code.EntityNotFound
+                StatusCode = ServiceCode.EntityNotFound
             };
         }
 
@@ -72,14 +72,14 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             {
                 return new StandartResponse<UserContactDTO>()
                 {
-                    StatusCode = Code.EntityNotFound,
+                    StatusCode = ServiceCode.EntityNotFound,
                     Message = "Contact not found"
                 };
             }
             return new StandartResponse<UserContactDTO>()
             {
                 Data = new UserContactDTO(entity),
-                StatusCode = Code.ContactReadied
+                StatusCode = ServiceCode.ContactReadied
             };
         }
 
@@ -93,7 +93,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 return new StandartResponse<UserContactDTO>()
                 {
                     Message = "Account not found",
-                    StatusCode = Code.EntityNotFound,
+                    StatusCode = ServiceCode.EntityNotFound,
                 };
             }
 
@@ -110,7 +110,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return new StandartResponse<UserContactDTO>()
             {
                 Data = new UserContactDTO(existsAccount),
-                StatusCode = Code.ContactUpdated,
+                StatusCode = ServiceCode.ContactUpdated,
             };
         }
     }

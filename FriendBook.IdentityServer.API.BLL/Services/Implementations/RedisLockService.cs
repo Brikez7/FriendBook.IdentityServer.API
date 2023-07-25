@@ -34,11 +34,11 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
 
                 if (secretNumber != null)
                 {
-                    return new StandartResponse<string?> { Data = secretNumber, StatusCode = Code.RedisReceived };
+                    return new StandartResponse<string?> { Data = secretNumber, StatusCode = ServiceCode.RedisReceived };
                 }
-                return new StandartResponse<string?> { Data = null, StatusCode = Code.RedisEmpty, Message = "Object not found" };
+                return new StandartResponse<string?> { Data = null, StatusCode = ServiceCode.RedisEmpty, Message = "Object not found" };
             }
-            return new StandartResponse<string?> { Data = null, StatusCode = Code.RedisLocked, Message = "Redis was locked" };
+            return new StandartResponse<string?> { Data = null, StatusCode = ServiceCode.RedisLocked, Message = "Redis was locked" };
         }
 
         public async Task SetSecretNumber(string value, string key)
