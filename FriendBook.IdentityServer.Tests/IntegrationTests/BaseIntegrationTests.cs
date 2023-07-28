@@ -31,7 +31,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         }
 
         [OneTimeSetUp]
-        public async Task Initialization()
+        public virtual async Task Initialization()
         {
             _webHost = new WebHostFactory<Program, IdentityContext>();
             await _webHost.InitializeAsync();
@@ -40,7 +40,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         }
 
         [SetUp]
-        public async Task SetUp()
+        public virtual async Task SetUp()
         {
             HttpContent accountContent = JsonContent.Create(_requestAccount);
             HttpResponseMessage httpResponseAuth = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", accountContent);
@@ -55,13 +55,13 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _responseRegistries.AccessToken);
         }
         [TearDown]
-        public async Task Clear()
+        public virtual async Task Clear()
         {
             await _webHost.ClearData();
         }
 
         [OneTimeTearDown]
-        public async Task Dispose()
+        public virtual async Task Dispose()
         {
             await _webHost.DisposeAsync();
         }
