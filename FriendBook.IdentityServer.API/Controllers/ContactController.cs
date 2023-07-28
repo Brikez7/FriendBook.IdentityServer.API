@@ -27,14 +27,14 @@ namespace FriendBook.IdentityServer.API.Controllers
         }
 
         [HttpGet("Get/{id}")]
-        public async Task<IActionResult> GetContactInformation([FromRoute] Guid id)
+        public async Task<IActionResult> GetContact([FromRoute] Guid id)
         {
             var response = await _contactService.GetContact(x => x.Id == id);
             return Ok(response);
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateMyContactInformation([FromBody] UserContactDTO userContactDTO)
+        public async Task<IActionResult> UpdateContact([FromBody] UserContactDTO userContactDTO)
         {
             var responseValidation = await _contactValidationService.ValidateAsync(userContactDTO);
             if (responseValidation.StatusCode != ServiceCode.EntityIsValidated)

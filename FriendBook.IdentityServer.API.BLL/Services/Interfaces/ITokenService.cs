@@ -8,12 +8,12 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Interfaces
 {
     public interface ITokenService
     {
-        public ResponseAuthenticated GenerateAuthenticatedToken(DataAccessToken account, out string SecretNumber)
+        public ResponseAuthenticate GenerateAuthenticatedToken(DataAccessToken account, out string SecretNumber)
         {
             var accessToken = GenerateAccessToken(account);
             var refreshToken = GenerateRefreshToken(account, out SecretNumber);
 
-            return new ResponseAuthenticated(accessToken, refreshToken);
+            return new ResponseAuthenticate(accessToken, refreshToken);
         }
         public string GenerateAccessToken(DataAccessToken account);
         public string GenerateRefreshToken(DataAccessToken account, out string SecretNumber);

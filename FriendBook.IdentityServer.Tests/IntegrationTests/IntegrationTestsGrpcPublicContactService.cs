@@ -24,13 +24,13 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         private WebHostFactory<Program, IdentityContext> _webHost;
         private HttpClient _httpClient;
 
-        private readonly RequestAccount _requestAccount;
-        private ResponseAuthenticated _responseRegistries;
+        private readonly RequestNewAccount _requestAccount;
+        private ResponseAuthenticate _responseRegistries;
         private DataAccessToken _userData;
 
         internal const string UrlController = "api/v1/GrpcContactService";
 
-        public IntegrationTestsGrpcPublicContactService(RequestAccount requestAccount)
+        public IntegrationTestsGrpcPublicContactService(RequestNewAccount requestAccount)
         {
             _requestAccount = requestAccount;
         }
@@ -49,7 +49,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         {
             HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
             HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);
-            _responseRegistries = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())?.Data
+            _responseRegistries = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticate>>(await responseAuth.Content.ReadAsStringAsync())?.Data
                 ?? throw new JsonException("Error parsing JSON: response AUTH");
 
             var jwtSettings = _webHost.Services.GetService<IOptions<JWTSettings>>()?.Value
@@ -75,7 +75,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         [Test]
         public async Task GetProfiles()
         {
-            RequestAccount requestNewTestAccount = new RequestAccount() { Login = "NewTestUser", Password = "TestPassword12345!" };
+            RequestNewAccount requestNewTestAccount = new RequestNewAccount() { Login = "NewTestUser", Password = "TestPassword12345!" };
             HttpContent requestAccountContent = JsonContent.Create(requestNewTestAccount);
 
             await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);

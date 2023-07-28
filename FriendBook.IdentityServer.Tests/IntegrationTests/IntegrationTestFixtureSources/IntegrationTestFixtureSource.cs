@@ -8,8 +8,8 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtur
     {
         public IEnumerator GetEnumerator()
         {
-            yield return new object[] { new RequestAccount { Login = "Ilia", Password = "IliaPassword12345!" }};
-            yield return new object[] { new RequestAccount { Login = "Dima", Password = "DimaPassword12345!" } };
+            yield return new object[] { new RequestNewAccount { Login = "Ilia", Password = "IliaPassword12345!" }};
+            yield return new object[] { new RequestNewAccount { Login = "Dima", Password = "DimaPassword12345!" } };
         }
     }
 }

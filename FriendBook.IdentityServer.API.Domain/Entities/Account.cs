@@ -16,14 +16,14 @@ namespace FriendBook.IdentityServer.API.Domain.Entities
         public string Salt { get; set; } = null!;
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
-        public Account(RequestAccount model, string salt, string password)
+        public Account(RequestNewAccount model, string salt, string password)
         {
             Login = model.Login;
             Password = password;
             CreateDate = DateTime.Now;
             Salt = salt;
         }
-        public Account(RequestAccount model) 
+        public Account(RequestNewAccount model) 
         {
             Login = model.Login;
             Password = model.Password;

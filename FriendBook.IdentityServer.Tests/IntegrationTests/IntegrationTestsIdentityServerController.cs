@@ -23,12 +23,12 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         private WebHostFactory<Program, IdentityContext> _webHost;
         private HttpClient _httpClient;
 
-        private readonly RequestAccount _requestAccount;
-        private ResponseAuthenticated _responseRegistries;
+        private readonly RequestNewAccount _requestAccount;
+        private ResponseAuthenticate _responseRegistries;
         private DataAccessToken _userData;
 
         internal const string UrlController = "api/v1/IdentityServer";
-        public IntegrationTestsIdentityServerController(RequestAccount requestAccount)
+        public IntegrationTestsIdentityServerController(RequestNewAccount requestAccount)
         {
             _requestAccount = requestAccount;
         }
@@ -51,7 +51,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         {
             HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
             HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{UrlController}/Registration", requestAccountContent);
-            _responseRegistries = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())?.Data
+            _responseRegistries = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticate>>(await responseAuth.Content.ReadAsStringAsync())?.Data
                 ?? throw new JsonException("Error when parsing JSON: response auth");
 
             var jwtSettings = _webHost.Services.GetService<IOptions<JWTSettings>>()?.Value
@@ -73,7 +73,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
 
             HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{UrlController}/Registration", requestAccountContent);
-            BaseResponse<ResponseAuthenticated> customResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())
+            BaseResponse<ResponseAuthenticate> customResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticate>>(await responseAuth.Content.ReadAsStringAsync())
                 ?? throw new JsonException("Error when parsing JSON: responseAuth");
 
             Assert.Multiple(() =>
@@ -92,7 +92,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
             HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
 
             HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{UrlController}/Authenticate", requestAccountContent);
-            BaseResponse<ResponseAuthenticated> customResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())
+            BaseResponse<ResponseAuthenticate> customResponseAuth = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticate>>(await responseAuth.Content.ReadAsStringAsync())
                 ?? throw new JsonException("Error when parsing JSON: responseAuth");
 
             Assert.Multiple(() =>

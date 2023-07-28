@@ -32,7 +32,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             _redisLockService = redisLockService;
             _accountRepository = accountRepository;
         }
-        public async Task<BaseResponse<ResponseAuthenticated>> Registration(RequestAccount accountDTO)
+        public async Task<BaseResponse<ResponseAuthenticate>> Registration(RequestNewAccount accountDTO)
         {
             var responseAccount = await _userAccountService.GetAccount(x => x.Login == accountDTO.Login);
             if (responseAccount.StatusCode == ServiceCode.EntityNotFound)
@@ -45,26 +45,26 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
                 await _accountRepository.SaveAsync();
 
                 var authToken = (await Authenticate(accountDTO)).Data;
-                return new StandartResponse<ResponseAuthenticated>()
+                return new StandartResponse<ResponseAuthenticate>()
                 {
                     Data = authToken,
                     StatusCode = ServiceCode.UserRegistered
                 };
             }
-            return new StandartResponse<ResponseAuthenticated>()
+            return new StandartResponse<ResponseAuthenticate>()
             {
                 Message = "Account with login already exists",
                 StatusCode = ServiceCode.AccountAlreadyExists
             };
         }
 
-        public async Task<BaseResponse<ResponseAuthenticated>> Authenticate(RequestAccount accountDTO)
+        public async Task<BaseResponse<ResponseAuthenticate>> Authenticate(RequestNewAccount accountDTO)
         {
             var account = (await _userAccountService.GetAccount(x => x.Login == accountDTO.Login)).Data;
             if (account == null ||
                 !PasswordHelper.VerifyPasswordHash(accountDTO.Password, Convert.FromBase64String(account.Password), Convert.FromBase64String(account.Salt)))
             {
-                return new StandartResponse<ResponseAuthenticated>()
+                return new StandartResponse<ResponseAuthenticate>()
                 {
                     Message = "Account not found",
                     StatusCode = ServiceCode.ErrorAuthenticated
@@ -75,7 +75,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             var responseTokens = _tokenService.GenerateAuthenticatedToken(dataAT, out string secretNumber);
             _ = _redisLockService.SetSecretNumber(secretNumber, "Token:" + account.Id.ToString());
 
-            return new StandartResponse<ResponseAuthenticated>()
+            return new StandartResponse<ResponseAuthenticate>()
             {
                 Data = responseTokens,
                 StatusCode = ServiceCode.UserAuthenticated

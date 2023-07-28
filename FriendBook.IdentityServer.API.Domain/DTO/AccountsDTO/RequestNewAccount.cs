@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO
 {
-    public class RequestAccount
+    public class RequestNewAccount
     {
         public string Login { get; set; } = null!;
         public string Password { get; set; } = null!;
