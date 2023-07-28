@@ -10,7 +10,7 @@ service PublicContact
   rpc GetProfiles (RequestUserLogin) returns (ResponseProfiles){
   option (google.api.http) =
    {
-    get: "/api/v1/GrpcContactService/GetProfiles"
+    get: "/IdentityServer/v1/GrpcContactService/GetProfiles"
    };
   }
 }

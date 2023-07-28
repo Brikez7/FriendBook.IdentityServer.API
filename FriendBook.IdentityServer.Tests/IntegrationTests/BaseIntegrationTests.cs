@@ -23,7 +23,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         private protected ResponseAuthenticate _responseRegistries;
         private protected DataAccessToken _userData;
 
-        internal const string UrlAPI = "api/v1";
+        internal const string UrlAPI = "IdentityServer/v1";
 
         public BaseIntegrationTests(RequestNewAccount requestAccount)
         {

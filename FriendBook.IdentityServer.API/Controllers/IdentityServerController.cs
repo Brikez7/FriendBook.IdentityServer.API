@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FriendBook.IdentityServer.API.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("IdentityServer/v1/[controller]")]
     public class IdentityServerController : ControllerBase
     {
         private readonly ILogger<IdentityServerController> _logger;

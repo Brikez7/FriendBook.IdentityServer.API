@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FriendBook.IdentityServer.API.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("IdentityServer/v1/[controller]")]
     [Authorize]
     public class ContactController : ControllerBase
     {
