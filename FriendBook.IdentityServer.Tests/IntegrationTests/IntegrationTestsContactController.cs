@@ -1,5 +1,4 @@
 ﻿using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
-using FriendBook.IdentityServer.API.Domain.DTO;
 using System.Net.Http.Json;
 using System.Net;
 using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources;
