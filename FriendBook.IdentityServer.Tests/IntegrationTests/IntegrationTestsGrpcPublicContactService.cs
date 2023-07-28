@@ -77,6 +77,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         {
             RequestAccount requestNewTestAccount = new RequestAccount() { Login = "NewTestUser", Password = "TestPassword12345!" };
             HttpContent requestAccountContent = JsonContent.Create(requestNewTestAccount);
+
             await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);
 
             HttpResponseMessage responseProfiles = await _httpClient.GetAsync($"{UrlController}/GetProfiles?Login={""}");

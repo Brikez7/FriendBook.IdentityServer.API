@@ -3,7 +3,6 @@ using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.API.Domain.DTO;
 using FriendBook.IdentityServer.Tests.WebAppFactories;
-using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Net;
 using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources;
@@ -46,10 +45,10 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         [SetUp]
         public async Task TestRegistrationTestAccount() 
         {
-            HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
-            HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);
-            _responseRegistries = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticated>>(await responseAuth.Content.ReadAsStringAsync())?.Data
-                ?? throw new JsonException("Error parsing JSON: response AUTH");
+            HttpContent accountContent = JsonContent.Create(_requestAccount);
+            HttpResponseMessage httpResponseAuth = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", accountContent);
+            _responseRegistries = (await DeserializeHelper.TryDeserializeStandartResponse<ResponseAuthenticated>(httpResponseAuth)).Data
+                ?? throw new InvalidOperationException($"Data ResponseAuthenticated is null");
 
             var jwtSettings = _webHost.Services.GetService<IOptions<JWTSettings>>()?.Value
                 ?? throw new InvalidOperationException($"{JWTSettings.Name} not found");
@@ -71,17 +70,17 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         }
 
         [Test]
-        public async Task TestGetContactInformation() 
+        public async Task GetContactInformation() 
         {
-            HttpResponseMessage responseContact = await _httpClient.GetAsync($"{UrlController}/Get/{_userData.Id}");
-            BaseResponse<UserContactDTO> customResponseContact = JsonConvert.DeserializeObject<StandartResponse<UserContactDTO>>(await responseContact.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error parsing JSON: response UserContactDTO");
+            HttpResponseMessage httpResponseContact = await _httpClient.GetAsync($"{UrlController}/Get/{_userData.Id}");
+
+            var responseContact = await DeserializeHelper.TryDeserializeStandartResponse<UserContactDTO>(httpResponseContact);
 
             Assert.Multiple(() =>
             {
-                Assert.That(responseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseContact.StatusCode, Is.EqualTo(ServiceCode.ContactReadied));
-                Assert.IsNotNull(customResponseContact?.Data);
+                Assert.That(httpResponseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContact.StatusCode, Is.EqualTo(ServiceCode.ContactReadied));
+                Assert.That(responseContact?.Data, Is.Not.Null);
             });
         }
 
@@ -89,28 +88,26 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         public async Task TestGetProfiles()
         {
             var newUser = new RequestAccount() { Login = "TestNewUser", Password = "TestPassword12345!" };
+            HttpContent accountContent = JsonContent.Create(newUser);
 
-            HttpContent requestAccountContent = JsonContent.Create(newUser);
-            HttpResponseMessage responseAddNewUser = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);
+            HttpResponseMessage httpResponseNewUser = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", accountContent);
 
-            HttpResponseMessage responseProfiles = await _httpClient.GetAsync($"{UrlController}/GetProfiles");
-            BaseResponse<ResponseProfile[]> customResponseProfiles = JsonConvert.DeserializeObject<StandartResponse<ResponseProfile[]>>(await responseProfiles.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error parsing JSON: response ResponseProfile[]");
+            HttpResponseMessage httpResponseProfiles = await _httpClient.GetAsync($"{UrlController}/GetProfiles");
+            var responseProfiles = await DeserializeHelper.TryDeserializeStandartResponse<ResponseProfile[]>(httpResponseProfiles);
 
             Assert.Multiple(() =>
             {
-                Assert.That(responseProfiles.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(responseAddNewUser.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(customResponseProfiles.StatusCode, Is.EqualTo(ServiceCode.ContactReadied));
-                Assert.IsNotNull(customResponseProfiles?.Data);
-                Assert.That(customResponseProfiles!.Data![0].Login, Is.EqualTo(newUser.Login));
+                Assert.That(httpResponseProfiles.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseProfiles.StatusCode, Is.EqualTo(ServiceCode.ContactReadied));
+                Assert.That(responseProfiles?.Data, Is.Not.Null);
+                Assert.That(responseProfiles?.Data?[0].Login, Is.EqualTo(newUser.Login));
             });
         }
 
         [Test]
-        public async Task TestUpdateMyContactInformation()
+        public async Task UpdateMyContactInformation()
         {
-            UserContactDTO userContactDTO = new UserContactDTO() 
+            UserContactDTO userContactDTO = new() 
             {
                 Email = "test@gmail.com",
                 FullName = "Pasha Dubkovski",
@@ -118,25 +115,23 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
                 Profession = ".NET Developer",
                 Telephone = "375 (29) 231 91 83" 
             };
-            HttpContent requestUserContactDTO = JsonContent.Create(userContactDTO);
+            HttpContent userContactDTOContent = JsonContent.Create(userContactDTO);
 
-            HttpResponseMessage responseUpdatedContact = await _httpClient.PutAsync($"{UrlController}/Update", requestUserContactDTO);
-            BaseResponse<UserContactDTO> customResponseUpdatedContact = JsonConvert.DeserializeObject<StandartResponse<UserContactDTO>>(await responseUpdatedContact.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error parsing JSON: response UserContactDTO");
+            HttpResponseMessage httpResponseUpdatedContact = await _httpClient.PutAsync($"{UrlController}/Update", userContactDTOContent);
+            var responseUpdatedContact = await DeserializeHelper.TryDeserializeStandartResponse<UserContactDTO>(httpResponseUpdatedContact);
 
-            HttpResponseMessage responseContact = await _httpClient.GetAsync($"{UrlController}/Get/{_userData.Id}");
-            BaseResponse<UserContactDTO> customResponseContact = JsonConvert.DeserializeObject<StandartResponse<UserContactDTO>>(await responseContact.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error parsing JSON: response UserContactDTO");
+            HttpResponseMessage httpResponseContact = await _httpClient.GetAsync($"{UrlController}/Get/{_userData.Id}");
+            var responseContact = await DeserializeHelper.TryDeserializeStandartResponse<UserContactDTO>(httpResponseContact);
 
             Assert.Multiple(() =>
             {
-                Assert.That(responseUpdatedContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(responseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(httpResponseUpdatedContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(httpResponseContact.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-                Assert.That(customResponseUpdatedContact.StatusCode, Is.EqualTo(ServiceCode.ContactUpdated));
-                Assert.That(customResponseUpdatedContact?.Data, Is.Not.Null);
-                Assert.That(customResponseContact?.Data, Is.Not.Null);
-                AssertEx.PropertyValuesAreEquals(customResponseContact!.Data!, customResponseUpdatedContact!.Data!);
+                Assert.That(responseUpdatedContact.StatusCode, Is.EqualTo(ServiceCode.ContactUpdated));
+                Assert.That(responseUpdatedContact?.Data, Is.Not.Null);
+                Assert.That(responseContact?.Data, Is.Not.Null);
+                AssertEx.PropertyValuesAreEquals(responseContact!.Data!, responseUpdatedContact!.Data!);
             });
         }
     }
