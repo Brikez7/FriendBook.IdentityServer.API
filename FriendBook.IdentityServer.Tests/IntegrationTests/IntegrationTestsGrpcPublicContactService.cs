@@ -1,95 +1,36 @@
-﻿using FriendBook.IdentityServer.API.DAL;
-using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
-using FriendBook.IdentityServer.API.Domain.DTO;
-using FriendBook.IdentityServer.API.Domain.JWT;
-using FriendBook.IdentityServer.API.Domain.Settings;
+﻿using FriendBook.IdentityServer.API.Domain.DTO.AccountsDTO;
 using FriendBook.IdentityServer.Tests.IntegrationTests.IntegrationTestFixtureSources;
-using FriendBook.IdentityServer.Tests.WebAppFactories;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using FriendBook.IdentityServer.API;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using FriendBook.IdentityServer.API.BLL.gRPCServices.ContactService;
-using FriendBook.IdentityServer.API.Domain.Response;
 using FriendBook.IdentityServer.Tests.TestHelpers;
 
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
     [TestFixtureSource(typeof(IntegrationTestFixtureSource))]
-    internal class IntegrationTestsGrpcPublicContactService
+    internal class IntegrationTestsGrpcPublicContactService : BaseIntegrationTests
     {
-        private WebHostFactory<Program, IdentityContext> _webHost;
-        private HttpClient _httpClient;
+        internal const string UrlController = $"{UrlAPI}/GrpcContactService";
 
-        private readonly RequestNewAccount _requestAccount;
-        private ResponseAuthenticate _responseRegistries;
-        private DataAccessToken _userData;
-
-        internal const string UrlController = "api/v1/GrpcContactService";
-
-        public IntegrationTestsGrpcPublicContactService(RequestNewAccount requestAccount)
-        {
-            _requestAccount = requestAccount;
-        }
-
-        [OneTimeSetUp]
-        public async Task Setup()
-        {
-            _webHost = new WebHostFactory<Program, IdentityContext>();
-            await _webHost.InitializeAsync();
-
-            _httpClient = _webHost.CreateClient();
-        }
-
-        [SetUp]
-        public async Task TestRegistrationTestAccount()
-        {
-            HttpContent requestAccountContent = JsonContent.Create(_requestAccount);
-            HttpResponseMessage responseAuth = await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);
-            _responseRegistries = JsonConvert.DeserializeObject<StandartResponse<ResponseAuthenticate>>(await responseAuth.Content.ReadAsStringAsync())?.Data
-                ?? throw new JsonException("Error parsing JSON: response AUTH");
-
-            var jwtSettings = _webHost.Services.GetService<IOptions<JWTSettings>>()?.Value
-                ?? throw new InvalidOperationException($"{JWTSettings.Name} not found");
-            _userData = TokenHelpers.GetDataTokenAuth(_responseRegistries.AccessToken, jwtSettings.Issuer, jwtSettings.Audience, jwtSettings.AccessTokenSecretKey)
-                ?? throw new InvalidOperationException("The access token cannot be read");
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _responseRegistries.AccessToken);
-        }
-
-        [TearDown]
-        public async Task Clear()
-        {
-            await _webHost.ClearData();
-        }
-
-        [OneTimeTearDown]
-        public async Task Dispose()
-        {
-            await _webHost.DisposeAsync();
-        }
+        public IntegrationTestsGrpcPublicContactService(RequestNewAccount requestAccount) : base(requestAccount){}
 
         [Test]
         public async Task GetProfiles()
         {
-            RequestNewAccount requestNewTestAccount = new RequestNewAccount() { Login = "NewTestUser", Password = "TestPassword12345!" };
-            HttpContent requestAccountContent = JsonContent.Create(requestNewTestAccount);
+            RequestNewAccount requestNewAccount = new() { Login = "NewTestUser", Password = "TestPassword12345!" };
+            HttpContent requestNewAccountContent = JsonContent.Create(requestNewAccount);
 
-            await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestAccountContent);
+            await _httpClient.PostAsync($"{IntegrationTestsIdentityServerController.UrlController}/Registration", requestNewAccountContent);
 
-            HttpResponseMessage responseProfiles = await _httpClient.GetAsync($"{UrlController}/GetProfiles?Login={""}");
-            ResponseProfiles objResponseProfiles = JsonConvert.DeserializeObject<ResponseProfiles>(await responseProfiles.Content.ReadAsStringAsync())
-                ?? throw new JsonException("Error when parsing JSON: response auth");
+            HttpResponseMessage httpResponseProfiles = await _httpClient.GetAsync($"{UrlController}/GetProfiles?Login={""}");
+            ResponseProfiles responseProfiles = await DeserializeHelper.TryDeserialize<ResponseProfiles>(httpResponseProfiles);
 
             Assert.Multiple(() =>
             {
-                Assert.That(responseProfiles.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(objResponseProfiles.Profiles.Count, Is.EqualTo(1));
-                Assert.That(objResponseProfiles.Profiles[0].Login, Is.EqualTo(requestNewTestAccount.Login));
-                Assert.That(objResponseProfiles.Profiles[0].FullName, Is.EqualTo(""));
+                Assert.That(httpResponseProfiles.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseProfiles.Profiles, Has.Count.EqualTo(1));
+                Assert.That(responseProfiles.Profiles[0].Login, Is.EqualTo(requestNewAccount.Login));
+                Assert.That(responseProfiles.Profiles[0].FullName, Is.EqualTo(""));
             });
         }
     }

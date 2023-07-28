@@ -9,7 +9,7 @@ using FriendBook.IdentityServer.Tests.TestHelpers;
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
     [TestFixtureSource(typeof(IntegrationTestFixtureSource))]
-    public class IntegrationTestsIdentityServerController : BaseIntegrationTests
+    internal class IntegrationTestsIdentityServerController : BaseIntegrationTests
     {
         internal const string UrlController = $"{UrlAPI}/IdentityServer";
 

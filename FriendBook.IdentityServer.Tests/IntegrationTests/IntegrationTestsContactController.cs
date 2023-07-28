@@ -8,7 +8,7 @@ using FriendBook.IdentityServer.Tests.TestHelpers;
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
     [TestFixtureSource(typeof(IntegrationTestFixtureSource))]
-    public class IntegrationTestsContactController : BaseIntegrationTests
+    internal class IntegrationTestsContactController : BaseIntegrationTests
     {
         internal const string UrlController = $"{UrlAPI}/Contact";
 

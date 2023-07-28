@@ -7,7 +7,7 @@ using FriendBook.IdentityServer.Tests.TestHelpers;
 namespace FriendBook.IdentityServer.Tests.IntegrationTests
 {
     [TestFixtureSource(typeof(IntegrationTestFixtureSource))]
-    public class IntegrationTestsGrpcPublicAccountService : BaseIntegrationTests
+    internal class IntegrationTestsGrpcPublicAccountService : BaseIntegrationTests
     {
         internal const string UrlController = $"{UrlAPI}/GrpcAccountService";
 
