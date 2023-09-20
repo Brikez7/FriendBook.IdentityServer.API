@@ -38,7 +38,7 @@ namespace FriendBook.IdentityServer.API
             builder.Services.AddGrpcSwagger();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1.1",new OpenApiInfo { Version = "v1.1" });
+                c.SwaggerDoc("v1",new OpenApiInfo { Version = "v1" });
             });
 
             var app = builder.Build();
@@ -48,7 +48,7 @@ namespace FriendBook.IdentityServer.API
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1.1/swagger.json", "FriendBook.IdentityServer.API v1.1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FriendBook.IdentityServer.API v1");
                 });
             }
 

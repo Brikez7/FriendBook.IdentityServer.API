@@ -16,7 +16,7 @@ namespace FriendBook.IdentityServer.API.Controllers
         private readonly ILogger<ContactController> _logger;
         private readonly IContactService _contactService;
         private readonly IValidationService<UserContactDTO> _contactValidationService;
-        public Lazy<DataAccessToken> UserToken { get; set; }
+        public Lazy<AccessToken> UserToken { get; set; }
         public ContactController(ILogger<ContactController> logger, IContactService contactService, IValidationService<UserContactDTO> validationService,
             IHttpContextAccessor httpContextAccessor)
         {

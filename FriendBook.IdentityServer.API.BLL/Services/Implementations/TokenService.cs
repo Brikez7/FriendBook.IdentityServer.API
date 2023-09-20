@@ -22,7 +22,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             _JWTSettings = optionJWTSettings.Value;
         }
 
-        public string GenerateAccessToken(DataAccessToken account)
+        public string GenerateAccessToken(AccessToken account)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -35,7 +35,7 @@ namespace FriendBook.IdentityServer.API.BLL.Services.Implementations
             return jwtToken;
         }
 
-        public string GenerateRefreshToken(DataAccessToken account, out string SecretNumber)
+        public string GenerateRefreshToken(AccessToken account, out string SecretNumber)
         {
             var randomNumber = new byte[32];
             using (var rng = RandomNumberGenerator.Create())

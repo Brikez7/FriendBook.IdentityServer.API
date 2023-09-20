@@ -30,6 +30,5 @@ namespace FriendBook.IdentityServer.API.HostedService
 
             return;
         }
-
     }
 }

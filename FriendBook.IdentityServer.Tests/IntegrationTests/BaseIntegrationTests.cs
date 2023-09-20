@@ -21,7 +21,7 @@ namespace FriendBook.IdentityServer.Tests.IntegrationTests
         private protected HttpClient _httpClient;
 
         private protected ResponseAuthenticate _responseRegistries;
-        private protected DataAccessToken _userData;
+        private protected AccessToken _userData;
 
         internal const string UrlAPI = "IdentityServer/v1";
 

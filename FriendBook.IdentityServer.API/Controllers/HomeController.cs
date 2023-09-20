@@ -10,7 +10,7 @@ namespace FriendBook.IdentityServer.API.Controllers
     public class HomeController : ControllerBase
     {
         private readonly ILogger<HomeController> _logger;
-        private Lazy<DataAccessToken> UserToken { get; set; } 
+        private Lazy<AccessToken> UserToken { get; set; } 
         public HomeController(ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
