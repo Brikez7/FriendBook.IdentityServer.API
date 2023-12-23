@@ -11,6 +11,7 @@ using FriendBook.IdentityServer.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Net;
 using System.Text;
 
@@ -85,6 +86,7 @@ namespace FriendBook.IdentityServer.API
         {
             webApplicationBuilder.Services.AddHostedService<CheckDBHostedService>();
         }
+
         public static void AddGrpcServices(this WebApplicationBuilder webApplicationBuilder)
         {
             webApplicationBuilder.Services.Configure<GrpcSettings>(webApplicationBuilder.Configuration.GetSection(GrpcSettings.Name));
@@ -92,15 +94,15 @@ namespace FriendBook.IdentityServer.API
             var grpcSettings = webApplicationBuilder.Configuration.GetSection(GrpcSettings.Name).Get<GrpcSettings>() ??
                 throw new InvalidOperationException($"{GrpcSettings.Name} not found in appsettings.json");
 
-            webApplicationBuilder.WebHost.ConfigureKestrel(options =>
+            webApplicationBuilder.WebHost.UseKestrel().ConfigureKestrel(options =>
             {
                 options.Listen(IPAddress.Any, grpcSettings.IdentityGrpcHost, listenOptions =>
                 {
                     listenOptions.Protocols = HttpProtocols.Http2;
                 });
-            })
-            .UseKestrel();
+            });
         }
+
         public static void AddMiddleware(this WebApplication webApplication)
         {
             webApplication.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -115,6 +117,38 @@ namespace FriendBook.IdentityServer.API
                           .WithOrigins(urlApp.AppURL)
                           .AllowAnyHeader()
                           .AllowAnyMethod());
+        }
+
+        public static void AddSwagger(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddGrpcSwagger();
+            builder.Services.AddSwaggerGen(swagger =>
+            {
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                });
+
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
+            });
         }
     }
 }

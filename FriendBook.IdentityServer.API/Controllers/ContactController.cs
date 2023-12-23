@@ -44,8 +44,8 @@ namespace FriendBook.IdentityServer.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetProfiles/{login?}")]
-        public async Task<IActionResult> GetProfiles([FromRoute] string login = "")
+        [HttpGet("GetProfiles")]
+        public async Task<IActionResult> GetProfiles([FromQuery] string login = "")
         {
             var response = await _contactService.GetProfiles(login, UserToken.Value.Id);
             return Ok(response);

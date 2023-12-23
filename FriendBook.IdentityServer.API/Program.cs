@@ -2,7 +2,6 @@ using FriendBook.IdentityServer.API.BLL.GrpcServices;
 using FriendBook.IdentityServer.API.DAL;
 using FriendBook.IdentityServer.API.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 namespace FriendBook.IdentityServer.API
 {
@@ -15,9 +14,10 @@ namespace FriendBook.IdentityServer.API
             builder.Services.AddSingleton(builder.Configuration);
 
             builder.AddRepositories();
-            builder.AddServices();
             builder.AddValidators();
-
+            builder.AddServices();
+            builder.AddGrpcServices();
+            
             builder.AddAuthProperty();
 
             builder.AddRedisPropperty();
@@ -30,26 +30,21 @@ namespace FriendBook.IdentityServer.API
             builder.Services.Configure<AppUISetting>(builder.Configuration.GetSection("AppUISetting"));
 
             builder.Services.AddGrpcReflection();
-            builder.Services.AddGrpc().AddJsonTranscoding();
+            builder.Services.AddGrpc()
+                .AddJsonTranscoding()
+                ;
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            
-            builder.Services.AddGrpcSwagger();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1",new OpenApiInfo { Version = "v1" });
-            });
+
+            builder.AddSwagger();
 
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FriendBook.IdentityServer.API v1");
-                });
+                app.UseSwaggerUI();
             }
 
             app.MapGrpcService<GrpcPublicAccountService>();
@@ -67,6 +62,6 @@ namespace FriendBook.IdentityServer.API
             app.MapControllers();
 
             app.Run();
-        }
+        } 
     }
 }
